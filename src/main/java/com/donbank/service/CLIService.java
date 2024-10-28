@@ -9,18 +9,28 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.function.Function;
 
-
+/**
+ * CLIService provides a command-line interface for interacting with clients and their accounts.
+ * It allows clients to perform various operations such as depositing funds, withdrawing funds,
+ * creating accounts, deleting accounts, and serializing client data.
+ */
 public class CLIService {
 
     private ClientService clientService;
     private AccountService accountService;
 
+    /**
+     * Initializes a new instance of CLIService.
+     */
     public CLIService() {
     }
 
     private final Scanner inputConsole = new Scanner(System.in);
 
-    public void start() {
+    /**
+     * Starts the command-line interface, prompting the user for a client ID and allowing them
+     * to perform various account-related commands in a loop until they choose to exit.
+     */    public void start() {
         System.out.println("Enter client ID");
 
         int id = getClientId();
@@ -57,6 +67,11 @@ public class CLIService {
         inputConsole.close();
     }
 
+    /**
+     * Retrieves the client ID from user input, handling invalid input until a valid integer is provided.
+     *
+     * @return the client ID provided by the user.
+     */
     private int getClientId() {
         while (true) {
             try {
@@ -68,6 +83,11 @@ public class CLIService {
         }
     }
 
+    /**
+     * Retrieves the command input from user input, handling invalid input until a valid integer is provided.
+     *
+     * @return the command number corresponding to the user's choice.
+     */
     private int getCommandInput() {
         while (true) {
             try {
@@ -79,6 +99,13 @@ public class CLIService {
         }
     }
 
+    /**
+     * Changes the balance of the client's account based on the specified parameter (withdraw or contribute).
+     *
+     * @param id   the ID of the client.
+     * @param param the parameter indicating the type of balance change ("withdraw" or "contribute").
+     * @return a message indicating the result of the operation.
+     */
     private String changeBalanceAccount(int id, String param) {
         String result;
         System.out.println("\nEnter a currency from the available ones");
@@ -98,6 +125,12 @@ public class CLIService {
         return result;
     }
 
+    /**
+     * Creates a new account for the specified client based on user input.
+     *
+     * @param id the ID of the client.
+     * @return a message indicating the result of the account creation operation.
+     */
     private String createAccount(int id) {
         String result;
         System.out.println("\nEnter a currency from the available ones");
@@ -115,6 +148,12 @@ public class CLIService {
         return result;
     }
 
+    /**
+     * Removes an account for the specified client based on user input.
+     *
+     * @param id the ID of the client.
+     * @return a message indicating the result of the account removal operation.
+     */
     private String removeAccount(int id) {
         String result;
         System.out.println("\nEnter a currency from the available ones");
@@ -132,6 +171,11 @@ public class CLIService {
         return result;
     }
 
+    /**
+     * Retrieves a map of command functions, each corresponding to a specific user command.
+     *
+     * @return a map where the key is the command number and the value is a function that executes the command.
+     */
     private Map<Integer, Function<Integer, String>> getCommands() {
         Map<Integer, Function<Integer, String>> commands = new HashMap<>();
         commands.put(1, (id) -> changeBalanceAccount(id, "withdraw"));
