@@ -1,5 +1,6 @@
 package com.donbank.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Client {
@@ -16,7 +17,7 @@ public class Client {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.accounts = accounts;
+        this.accounts = new ArrayList<>(accounts);
     }
 
     public int getId() {
@@ -49,5 +50,15 @@ public class Client {
 
     public void setAccounts(List<Account> accounts) {
         this.accounts = accounts;
+    }
+
+    @Override
+    public String toString(){
+        return "{" +
+                "\n\"id\": " + id + "," +
+                "\n\"first_name\": \"" + firstName + "\"," +
+                "\n\"last_name\": \"" + lastName + "\"," +
+                "\n\"accounts\": " + accounts.toString() +
+                "\n}";
     }
 }

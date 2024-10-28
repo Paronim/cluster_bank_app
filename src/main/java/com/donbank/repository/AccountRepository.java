@@ -5,18 +5,23 @@ import com.donbank.entity.Account;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class AccountRepository {
-    private List<Account> accountsData;
+    private final List<Account> accountsData;
 
     public AccountRepository() {
         this.accountsData = getListAccounts();
     }
 
-    private static final String FILE_PATH = "src/main/resource/data/accounts.csv";
+    private static final String FILE_PATH = "src/main/resources/accounts.csv";
 
     public List<Account> getAccountsByIdClient(int idClient){
-        return accountsData.stream().filter(a -> a.getClientId() == idClient).toList();
+        return accountsData.stream().filter(a -> a.getClientId() == idClient).collect(Collectors.toList());
+    }
+
+    public List<Account> getAccountsData(){
+        return accountsData;
     }
 
     private List<Account> getListAccounts(){

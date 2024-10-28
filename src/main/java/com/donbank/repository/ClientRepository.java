@@ -14,7 +14,7 @@ public class ClientRepository {
         this.clientsData = getListClients(accounts);
     }
 
-    private static final String FILE_PATH = "src/main/resource/data/clients.csv";
+    private static final String FILE_PATH = "src/main/resources/clients.csv";
 
     public Client findById(int id){
         return clientsData.get(id);

@@ -1,6 +1,8 @@
 package com.donbank.entity;
 
-public class Account {
+import java.io.Serializable;
+
+public class Account implements Serializable {
 
     private int id;
     private String currency;
@@ -38,5 +40,14 @@ public class Account {
 
     public void setClientId(int clientId) {
         this.clientId = clientId;
+    }
+
+    @Override
+    public String toString(){
+        return "{\n" +
+                "\"id\": " + id + "," +
+                "\n\"currency\": \"" + currency + "\"," +
+                "\n\"balance\": " + balance +
+                "\n}";
     }
 }
