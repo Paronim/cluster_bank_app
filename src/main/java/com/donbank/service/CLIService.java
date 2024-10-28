@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.function.Function;
 
+
 public class CLIService {
 
     private ClientService clientService;
@@ -33,8 +34,6 @@ public class CLIService {
             System.out.println("1. Top up account");
             System.out.println("2. Withdraw account");
             System.out.println("3. Create account");
-
-            // FIX ERROR ImmutableCollections
             System.out.println("4. Delete account");
             System.out.println("5. Serialization");
             System.out.println("6. exit\n");
@@ -142,8 +141,10 @@ public class CLIService {
         commands.put(5, (id) -> {
             String result;
             try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/main/resources/person.json"))) {
-                writer.write(clientService.getClientById(id).toString());
-                result = "Serialized data is saved in person.json";
+                String data = clientService.getClientById(id).toString();
+                writer.write(data);
+                result = "Serialized data is saved in person.json\n" +
+                        data;
             } catch (IOException e) {
                 result = "Error saving data: " + e.getMessage();
                 e.printStackTrace();

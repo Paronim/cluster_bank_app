@@ -9,12 +9,16 @@ import java.util.stream.Collectors;
 
 public class AccountRepository {
     private final List<Account> accountsData;
+    private String FILE_PATH = "src/main/resources/accounts.csv";
 
     public AccountRepository() {
         this.accountsData = getListAccounts();
     }
 
-    private static final String FILE_PATH = "src/main/resources/accounts.csv";
+    public AccountRepository(String path) {
+        this.FILE_PATH = path;
+        this.accountsData = getListAccounts();
+    }
 
     public List<Account> getAccountsByIdClient(int idClient){
         return accountsData.stream().filter(a -> a.getClientId() == idClient).collect(Collectors.toList());

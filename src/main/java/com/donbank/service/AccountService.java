@@ -23,16 +23,22 @@ public class AccountService {
         this.accountRepository = new AccountRepository();
     }
 
+    public AccountService(AccountRepository accountRepository){
+        this.accountRepository = accountRepository;
+    }
+
     public List<Account> getAccountsByIdClient(int id) {
         return accountRepository.getAccountsByIdClient(id);
     }
 
     public String depositFunds(String currency, int amount, List<Account> accounts, String param) throws InsufficientFundsException {
-
+        if(!isValidCurrency(currency)){
+            return "Not valid currency";
+        }
         boolean checkParam = Objects.equals(param, "contribute");
         Account account = getAccountsByCurrency(currency, accounts);
 
-        if(checkParam && account.getBalance()-amount < account.getBalance()){
+        if(checkParam && account.getBalance() < amount){
             throw new InsufficientFundsException();
         }
 
@@ -43,20 +49,19 @@ public class AccountService {
     }
 
     public String createAccount(String currency, List<Account> accounts, int clientId) {
-        if(!Arrays.stream(Currency.values()).anyMatch(c -> c.name().equalsIgnoreCase(currency))){
+        if(!isValidCurrency(currency)){
             return "Not valid currency";
         }
         boolean account = accounts.stream().anyMatch(a -> Objects.equals(a.getCurrency(), currency));
         if(!account){
-            accounts.add(new Account(accountRepository.getAccountsData().size()+1, currency, 0, clientId));
+            accounts.add(new Account(accountRepository.getAccountsData().size()+1, currency.toUpperCase(), 0, clientId));
             return "account created";
         }
         return "an account with this currency already exists";
     }
 
     public String deleteAccount(String currency, List<Account> accounts) throws AccountNotFoundException {
-        if(!Arrays.stream(Currency.values()).anyMatch(c -> c.name().equalsIgnoreCase(currency))){
-            System.out.println(Arrays.asList(Currency.values()).contains(currency));
+        if(!isValidCurrency(currency)){
             return "Not valid currency";
         }
         Iterator<Account> iterator = accounts.iterator();
@@ -74,5 +79,9 @@ public class AccountService {
 
     private Account getAccountsByCurrency(String currency, List<Account> accounts) {
         return accounts.stream().filter(a -> Objects.equals(a.getCurrency(), currency)).toList().getFirst();
+    }
+
+    private boolean isValidCurrency (String currency){
+        return Arrays.stream(Currency.values()).anyMatch(c -> c.name().equalsIgnoreCase(currency));
     }
 }

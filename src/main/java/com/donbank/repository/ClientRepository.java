@@ -8,20 +8,24 @@ import java.util.*;
 
 public class ClientRepository {
 
-    private Map<Integer, Client> clientsData;
+    private final Map<Integer, Client> clientsData;
+    private String FILE_PATH = "src/main/resources/clients.csv";
 
     public ClientRepository(List<Account> accounts) {
         this.clientsData = getListClients(accounts);
     }
 
-    private static final String FILE_PATH = "src/main/resources/clients.csv";
+    public ClientRepository(List<Account> accounts, String path) {
+        this.FILE_PATH = path;
+        this.clientsData = getListClients(accounts);
+    }
 
     public Client findById(int id){
         return clientsData.get(id);
     }
 
     private Map<Integer, Client> getListClients(List<Account> accounts){
-        Map<Integer, Client> clientList = new HashMap();
+        Map<Integer, Client> clientList = new HashMap<>();
         try
         {
             File clients = new File(FILE_PATH);

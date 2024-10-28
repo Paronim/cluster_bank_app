@@ -14,6 +14,10 @@ public class ClientService {
         this.clientRepository = new ClientRepository(accounts);
     }
 
+    public ClientService(ClientRepository clientRepository){
+        this.clientRepository = clientRepository;
+    }
+
     public Client getClientById(int id) {
         return clientRepository.findById(id);
     }
