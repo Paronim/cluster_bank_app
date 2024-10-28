@@ -1,6 +1,8 @@
 package com.donbank.service;
 
 import com.donbank.entity.Account;
+import com.donbank.exception.AccountNotFoundException;
+import com.donbank.exception.InsufficientFundsException;
 import com.donbank.repository.AccountRepository;
 
 import java.util.Arrays;
@@ -25,9 +27,15 @@ public class AccountService {
         return accountRepository.getAccountsByIdClient(id);
     }
 
-    public String depositFunds(String currency, int amount, List<Account> accounts, String param) {
+    public String depositFunds(String currency, int amount, List<Account> accounts, String param) throws InsufficientFundsException {
 
+        boolean checkParam = Objects.equals(param, "contribute");
         Account account = getAccountsByCurrency(currency, accounts);
+
+        if(checkParam && account.getBalance()-amount < account.getBalance()){
+            throw new InsufficientFundsException();
+        }
+
         double balance = Objects.equals(param, "contribute") ? account.getBalance() - amount : account.getBalance() + amount;
         account.setBalance(balance);
 
@@ -46,7 +54,7 @@ public class AccountService {
         return "an account with this currency already exists";
     }
 
-    public String deleteAccount(String currency, List<Account> accounts){
+    public String deleteAccount(String currency, List<Account> accounts) throws AccountNotFoundException {
         if(!Arrays.stream(Currency.values()).anyMatch(c -> c.name().equalsIgnoreCase(currency))){
             System.out.println(Arrays.asList(Currency.values()).contains(currency));
             return "Not valid currency";
@@ -61,7 +69,7 @@ public class AccountService {
             }
         }
 
-        return "An account with this currency not found";
+        throw new AccountNotFoundException();
     }
 
     private Account getAccountsByCurrency(String currency, List<Account> accounts) {

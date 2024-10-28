@@ -112,7 +112,6 @@ public class CLIService {
             result = accountService.createAccount(currency, clientService.getClientById(id).getAccounts(), id);
         } catch (Exception e) {
             result = "Error while processing the create account: " + e.getMessage();
-            e.printStackTrace();
         }
         return result;
     }
@@ -130,8 +129,6 @@ public class CLIService {
             result = accountService.deleteAccount(currency, clientService.getClientById(id).getAccounts());
         } catch (Exception e) {
             result = "Error while processing the remove account: " + e.getMessage();
-            e.printStackTrace();
-
         }
         return result;
     }
