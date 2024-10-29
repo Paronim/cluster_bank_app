@@ -17,14 +17,6 @@ import java.util.Objects;
  */
 public class AccountService {
 
-    /**
-     * Enum representing the available currencies for accounts.
-     */
-    enum Currency {
-        RUB,
-        USD
-    }
-
     private AccountRepository accountRepository;
 
     /**
@@ -66,18 +58,15 @@ public class AccountService {
      * @return a message indicating the outcome of the operation.
      * @throws InsufficientFundsException if attempting to withdraw more than the account balance.
      */
-    public String depositFunds(String currency, int amount, List<Account> accounts, String param) throws InsufficientFundsException {
-        if (!isValidCurrency(currency)) {
-            return "Not valid currency";
-        }
-        boolean checkParam = Objects.equals(param, "contribute");
+    public String depositFunds(String currency, int amount, List<Account> accounts, String param) throws InsufficientFundsException, AccountNotFoundException {
+        boolean checkParam = Objects.equals(param, "withdraw");
         Account account = getAccountsByCurrency(currency, accounts);
 
         if (checkParam && account.getBalance() < amount) {
             throw new InsufficientFundsException();
         }
 
-        double balance = Objects.equals(param, "contribute") ? account.getBalance() - amount : account.getBalance() + amount;
+        double balance = Objects.equals(param, "withdraw") ? account.getBalance() - amount : account.getBalance() + amount;
         account.setBalance(balance);
 
         return "Amount updated";
@@ -92,9 +81,6 @@ public class AccountService {
      * @return a message indicating the outcome of the operation.
      */
     public String createAccount(String currency, List<Account> accounts, int clientId) {
-        if (!isValidCurrency(currency)) {
-            return "Not valid currency";
-        }
         boolean accountExists = accounts.stream().anyMatch(a -> Objects.equals(a.getCurrency(), currency));
         if (!accountExists) {
             accounts.add(new Account(accountRepository.getAccountsData().size() + 1, currency.toUpperCase(), 0, clientId));
@@ -112,9 +98,6 @@ public class AccountService {
      * @throws AccountNotFoundException if no account with the specified currency is found.
      */
     public String deleteAccount(String currency, List<Account> accounts) throws AccountNotFoundException {
-        if (!isValidCurrency(currency)) {
-            return "Not valid currency";
-        }
         Iterator<Account> iterator = accounts.iterator();
 
         while (iterator.hasNext()) {
@@ -135,17 +118,14 @@ public class AccountService {
      * @param accounts the list of accounts associated with the client.
      * @return the Account object associated with the specified currency.
      */
-    private Account getAccountsByCurrency(String currency, List<Account> accounts) {
-        return accounts.stream().filter(a -> Objects.equals(a.getCurrency(), currency)).findFirst().orElse(null);
+    public Account getAccountsByCurrency(String currency, List<Account> accounts) throws AccountNotFoundException {
+        Account account = accounts.stream().filter(a -> Objects.equals(a.getCurrency(), currency)).findFirst().orElse(null);
+
+        if(account != null){
+            return account;
+        } else {
+            throw new AccountNotFoundException();
+        }
     }
 
-    /**
-     * Validates whether the provided currency is supported.
-     *
-     * @param currency the currency to validate.
-     * @return true if the currency is valid, false otherwise.
-     */
-    private boolean isValidCurrency(String currency) {
-        return Arrays.stream(Currency.values()).anyMatch(c -> c.name().equalsIgnoreCase(currency));
-    }
 }

@@ -8,6 +8,14 @@ import java.io.Serializable;
  */
 public class Account implements Serializable {
 
+
+    /**
+     * Enum representing the available currencies for accounts.
+     */
+    public enum Currency {
+        RUB,
+        USD
+    }
     /**
      * the unique identifier for the account.
      */
@@ -15,7 +23,8 @@ public class Account implements Serializable {
     /**
      * the currency type of the account (e.g., RUB, USD).
      */
-    private String currency;
+
+    private Currency currency;
     /**
      *the current balance of the account.
      */
@@ -40,7 +49,7 @@ public class Account implements Serializable {
      */
     public Account(int id, String currency, double balance, int clientId) {
         this.id = id;
-        this.currency = currency;
+        this.currency = Currency.valueOf(currency);
         this.balance = balance;
         this.clientId = clientId;
     }
@@ -51,7 +60,7 @@ public class Account implements Serializable {
      * @return the currency type as a String.
      */
     public String getCurrency() {
-        return currency;
+        return currency.toString();
     }
 
     /**
@@ -60,7 +69,7 @@ public class Account implements Serializable {
      * @param currency the currency type to set.
      */
     public void setCurrency(String currency) {
-        this.currency = currency;
+        this.currency = Currency.valueOf(currency);
     }
 
     /**

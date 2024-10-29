@@ -2,7 +2,6 @@ package com.donbank.service;
 
 import com.donbank.entity.Account;
 
-import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +11,7 @@ import java.util.function.Function;
 /**
  * CLIService provides a command-line interface for interacting with clients and their accounts.
  * It allows clients to perform various operations such as depositing funds, withdrawing funds,
- * creating accounts, deleting accounts, and serializing client data.
+ * creating accounts and deleting accounts.
  */
 public class CLIService {
 
@@ -30,10 +29,11 @@ public class CLIService {
     /**
      * Starts the command-line interface, prompting the user for a client ID and allowing them
      * to perform various account-related commands in a loop until they choose to exit.
-     */    public void start() {
+     */
+    public void start() {
         System.out.println("Enter client ID");
 
-        int id = getClientId();
+        int id = getIntegerInput("Invalid input. Please enter a valid client ID.");
 
         accountService = new AccountService();
         List<Account> accountList = accountService.getAccountsByIdClient(id);
@@ -45,10 +45,9 @@ public class CLIService {
             System.out.println("2. Withdraw account");
             System.out.println("3. Create account");
             System.out.println("4. Delete account");
-            System.out.println("5. Serialization");
             System.out.println("6. exit\n");
 
-            int inputCommandNumber = getCommandInput();
+            int inputCommandNumber = getIntegerInput("Invalid input. Please enter a number corresponding to a command.");
 
             if (inputCommandNumber == 6) {
                 break;
@@ -68,57 +67,69 @@ public class CLIService {
     }
 
     /**
-     * Retrieves the client ID from user input, handling invalid input until a valid integer is provided.
+     * Retrieves the number value from user input, handling invalid input until a valid integer is provided.
      *
-     * @return the client ID provided by the user.
+     * @param error the error message.
+     * @return user-entered number of the selected parameter.
      */
-    private int getClientId() {
+    private int getIntegerInput(String error) {
         while (true) {
             try {
                 return inputConsole.nextInt();
             } catch (Exception e) {
-                System.out.println("Invalid input. Please enter a valid client ID.");
+                System.out.println(error);
                 inputConsole.next();
             }
         }
     }
 
     /**
-     * Retrieves the command input from user input, handling invalid input until a valid integer is provided.
+     * Prompts the user to select a currency from the available options.
+     * Displays each currency with its corresponding index and expects
+     * a valid integer input from the user. If an invalid input is provided,
+     * the user will be prompted to try again.
      *
-     * @return the command number corresponding to the user's choice.
+     * @return The selected currency as a String.
      */
-    private int getCommandInput() {
+    private String getCurrency() {
+        System.out.println("\nEnter a currency from the available ones");
+        for (Account.Currency currency : Account.Currency.values()) {
+            System.out.println(currency.ordinal() + 1 + ". " + currency);
+        }
+
         while (true) {
-            try {
-                return inputConsole.nextInt();
-            } catch (Exception e) {
-                System.out.println("Invalid input. Please enter a number corresponding to a command.");
-                inputConsole.next();
+            int numberCurrency = getIntegerInput("Invalid input. Please enter a number corresponding to a currency.");
+
+            if (numberCurrency <= Account.Currency.values().length && numberCurrency > 0) {
+                return Account.Currency.values()[numberCurrency-1].toString();
+
+            } else {
+                System.out.println("Not valid currency");
             }
         }
+
     }
 
     /**
      * Changes the balance of the client's account based on the specified parameter (withdraw or contribute).
      *
-     * @param id   the ID of the client.
+     * @param id    the ID of the client.
      * @param param the parameter indicating the type of balance change ("withdraw" or "contribute").
      * @return a message indicating the result of the operation.
      */
     private String changeBalanceAccount(int id, String param) {
         String result;
-        System.out.println("\nEnter a currency from the available ones");
-        for (AccountService.Currency currency : AccountService.Currency.values()) {
-            System.out.println(currency);
-        }
 
-        String currency = inputConsole.next().toUpperCase();
-        System.out.println("\nEnter amount");
+        String currency = getCurrency();
+        List<Account> accountsList = clientService.getClientById(id).getAccounts();
 
         try {
+            System.out.println(accountService.getAccountsByCurrency(currency, accountsList).toString());
+            System.out.println("\nEnter amount");
+
             int amount = inputConsole.nextInt();
-            result = accountService.depositFunds(currency, amount, clientService.getClientById(id).getAccounts(), param);
+            result = accountService.depositFunds(currency, amount, accountsList, param)  + "\n" + accountService.getAccountsByCurrency(currency, accountsList).toString();
+
         } catch (Exception e) {
             result = "Error while processing the deposit: " + e.getMessage();
         }
@@ -133,12 +144,8 @@ public class CLIService {
      */
     private String createAccount(int id) {
         String result;
-        System.out.println("\nEnter a currency from the available ones");
-        for (AccountService.Currency currency : AccountService.Currency.values()) {
-            System.out.println(currency);
-        }
 
-        String currency = inputConsole.next().toUpperCase();
+        String currency = getCurrency();
 
         try {
             result = accountService.createAccount(currency, clientService.getClientById(id).getAccounts(), id);
@@ -156,12 +163,8 @@ public class CLIService {
      */
     private String removeAccount(int id) {
         String result;
-        System.out.println("\nEnter a currency from the available ones");
-        for (AccountService.Currency currency : AccountService.Currency.values()) {
-            System.out.println(currency);
-        }
 
-        String currency = inputConsole.next().toUpperCase();
+        String currency = getCurrency();
 
         try {
             result = accountService.deleteAccount(currency, clientService.getClientById(id).getAccounts());
@@ -178,23 +181,10 @@ public class CLIService {
      */
     private Map<Integer, Function<Integer, String>> getCommands() {
         Map<Integer, Function<Integer, String>> commands = new HashMap<>();
-        commands.put(1, (id) -> changeBalanceAccount(id, "withdraw"));
-        commands.put(2, (id) -> changeBalanceAccount(id, "contribute"));
+        commands.put(1, (id) -> changeBalanceAccount(id, "contribute"));
+        commands.put(2, (id) -> changeBalanceAccount(id, "withdraw"));
         commands.put(3, (id) -> createAccount(id));
         commands.put(4, (id) -> removeAccount(id));
-        commands.put(5, (id) -> {
-            String result;
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/main/resources/person.json"))) {
-                String data = clientService.getClientById(id).toString();
-                writer.write(data);
-                result = "Serialized data is saved in person.json\n" +
-                        data;
-            } catch (IOException e) {
-                result = "Error saving data: " + e.getMessage();
-                e.printStackTrace();
-            }
-            return result;
-        });
 
         return commands;
     }
