@@ -39,6 +39,8 @@ public class CLIService {
         List<Account> accountList = accountService.getAccountsByIdClient(id);
         clientService = new ClientService(accountList);
 
+        System.out.println(clientService.getClientById(id).toString());
+
         while (true) {
             System.out.println("Choose command\n");
             System.out.println("1. Top up account");
