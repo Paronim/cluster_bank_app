@@ -44,21 +44,21 @@ public class AccountRepository {
     public List<Account> getAccountsByIdClient(long idClient) throws SQLException {
         List<Account> accountList = new ArrayList<>();
         String query = "SELECT * FROM app_dbi.accounts a WHERE a.client_id = ?";
-        PreparedStatement statement = connection.prepareStatement(query);
-        statement.setLong(1, idClient);
-        ResultSet resultSet = statement.executeQuery();
-
-        while (resultSet.next()) {
-            accountList.add(new Account(
-                    resultSet.getLong("id"),
-                    Account.Currency.valueOf(resultSet.getString("currency")),
-                    resultSet.getDouble("balance"),
-                    resultSet.getLong("client_id")
-            ));
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setLong(1, idClient);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    accountList.add(new Account.Builder()
+                            .setId(resultSet.getLong("id"))
+                            .setCurrency(Account.Currency.valueOf(resultSet.getString("currency")))
+                            .setBalance(resultSet.getDouble("balance"))
+                            .setClientId(resultSet.getLong("client_id"))
+                            .build()
+                    );
+                }
+            }
         }
 
-        statement.close();
-        resultSet.close();
         return accountList;
     }
 
@@ -73,20 +73,21 @@ public class AccountRepository {
         String query = "SELECT * FROM app_dbi.accounts a WHERE a.id = ?";
         try (PreparedStatement statement = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
             statement.setLong(1, id);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.first()) {
-                account = new Account(
-                        resultSet.getLong("id"),
-                        Account.Currency.valueOf(resultSet.getString("currency")),
-                        resultSet.getDouble("balance"),
-                        resultSet.getLong("client_id")
-                );
-            } else {
-                logger.log(Level.WARNING, "No account found with the specified ID.");
-                throw new AccountNotFoundException();
+            try (ResultSet resultSet = statement.executeQuery()) {
+
+                if (resultSet.first()) {
+                    account = new Account.Builder()
+                            .setId(resultSet.getLong("id"))
+                            .setCurrency(Account.Currency.valueOf(resultSet.getString("currency")))
+                            .setBalance(resultSet.getDouble("balance"))
+                            .setClientId(resultSet.getLong("client_id"))
+                            .build();
+                } else {
+                    logger.log(Level.WARNING, "No account found with the specified ID.");
+                    throw new AccountNotFoundException();
+                }
             }
 
-            resultSet.close();
         } catch (SQLException e) {
             logger.log(Level.SEVERE, e.getMessage());
         }
@@ -106,52 +107,51 @@ public class AccountRepository {
     public Account addAccount(String currency, double balance, long clientID) throws SQLException {
         Account account = null;
         String query = "INSERT INTO app_dbi.accounts (currency, balance, client_id) VALUES (?, ?, ?) RETURNING id, currency, balance, client_id";
-        PreparedStatement statement = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        try (PreparedStatement statement = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
 
-        statement.setString(1, currency);
-        statement.setDouble(2, balance);
-        statement.setLong(3, clientID);
+            statement.setString(1, currency);
+            statement.setDouble(2, balance);
+            statement.setLong(3, clientID);
 
-        ResultSet resultSet = statement.executeQuery();
+            try (ResultSet resultSet = statement.executeQuery()) {
 
-        if (resultSet.first()) {
-            account = new Account(
-                    resultSet.getLong("id"),
-                    Account.Currency.valueOf(resultSet.getString("currency")),
-                    resultSet.getDouble("balance"),
-                    resultSet.getLong("client_id")
-            );
-        } else {
-            logger.log(Level.WARNING, "No account found with the specified ID.");
+                if (resultSet.first()) {
+                    account = new Account.Builder()
+                            .setId(resultSet.getLong("id"))
+                            .setCurrency(Account.Currency.valueOf(resultSet.getString("currency")))
+                            .setBalance(resultSet.getDouble("balance"))
+                            .setClientId(resultSet.getLong("client_id"))
+                            .build();
+                } else {
+                    logger.log(Level.WARNING, "No account found with the specified ID.");
+                }
+
+            }
+            return account;
         }
-
-        statement.close();
-        resultSet.close();
-        return account;
     }
 
     /**
      * Deletes an account from the database based on its unique ID.
      *
      * @param id the unique identifier of the account to delete.
-     * @throws SQLException              if a database access error occurs.
-     * @throws AccountNotFoundException  if no account with the specified ID is found.
+     * @throws SQLException             if a database access error occurs.
+     * @throws AccountNotFoundException if no account with the specified ID is found.
      */
     public void deleteAccount(long id) throws SQLException, AccountNotFoundException {
         String query = "DELETE FROM app_dbi.accounts a WHERE a.id = ?";
-        PreparedStatement statement = connection.prepareStatement(query);
-        statement.setLong(1, id);
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setLong(1, id);
 
-        int rowsAffected = statement.executeUpdate();
+            int rowsAffected = statement.executeUpdate();
 
-        if (rowsAffected > 0) {
-            logger.log(Level.INFO, "Account deleted successfully");
-        } else {
-            logger.log(Level.WARNING, "No account found with the specified ID.");
-            throw new AccountNotFoundException();
+            if (rowsAffected > 0) {
+                logger.log(Level.INFO, "Account deleted successfully");
+            } else {
+                logger.log(Level.WARNING, "No account found with the specified ID.");
+                throw new AccountNotFoundException();
+            }
         }
-
-        statement.close();
     }
 
     /**
@@ -165,22 +165,21 @@ public class AccountRepository {
      */
     public void updateAccount(long id, String currency, double balance, long clientID) throws SQLException, AccountNotFoundException {
         String query = "UPDATE app_dbi.accounts SET currency = ?, balance = ?, client_id = ? WHERE id = ?";
-        PreparedStatement statement = connection.prepareStatement(query);
-        statement.setString(1, currency);
-        statement.setDouble(2, balance);
-        statement.setLong(3, clientID);
-        statement.setLong(4, id);
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, currency);
+            statement.setDouble(2, balance);
+            statement.setLong(3, clientID);
+            statement.setLong(4, id);
 
-        int rowsAffected = statement.executeUpdate();
+            int rowsAffected = statement.executeUpdate();
 
-        if (rowsAffected > 0) {
-            logger.log(Level.INFO, "Account updated successfully");
-        } else {
-            logger.log(Level.SEVERE, "No account found with the specified ID.");
-            throw new AccountNotFoundException();
+            if (rowsAffected > 0) {
+                logger.log(Level.INFO, "Account updated successfully");
+            } else {
+                logger.log(Level.SEVERE, "No account found with the specified ID.");
+                throw new AccountNotFoundException();
+            }
         }
-
-        statement.close();
     }
 
     /**
@@ -197,12 +196,11 @@ public class AccountRepository {
 
         while (reader.hasNextLine()) {
             String[] data = reader.nextLine().split(",");
-            accountList.add(new Account(
-                    Integer.parseInt(data[0]),
-                    Account.Currency.valueOf(data[1]),
-                    Double.parseDouble(data[2]),
-                    Integer.parseInt(data[3])
-            ));
+            accountList.add(new Account.Builder().setId(Integer.parseInt(data[0]))
+                            .setCurrency(Account.Currency.valueOf(data[1]))
+                            .setBalance(Double.parseDouble(data[2]))
+                            .setClientId(Integer.parseInt(data[3])).build()
+            );
         }
         reader.close();
 

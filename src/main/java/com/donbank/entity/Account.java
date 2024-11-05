@@ -32,6 +32,13 @@ public class Account implements Serializable {
         USD
     }
 
+    private Account(Builder builder) {
+        this.id = builder.id;
+        this.currency = builder.currency;
+        this.balance = builder.balance;
+        this.clientId = builder.clientId;
+    }
+
     /**
      * The unique identifier for the account.
      */
@@ -64,5 +71,39 @@ public class Account implements Serializable {
                 "\n\"currency\": \"" + currency + "\"," +
                 "\n\"balance\": " + balance +
                 "\n}";
+    }
+
+    /**
+     * Builder class for constructing Account instances.
+     */
+    public static class Builder {
+        private long id;
+        private Currency currency;
+        private double balance;
+        private long clientId;
+
+        public Builder setId(long id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder setCurrency(Currency currency) {
+            this.currency = currency;
+            return this;
+        }
+
+        public Builder setBalance(double balance) {
+            this.balance = balance;
+            return this;
+        }
+
+        public Builder setClientId(long clientId) {
+            this.clientId = clientId;
+            return this;
+        }
+
+        public Account build() {
+            return new Account(this);
+        }
     }
 }

@@ -32,10 +32,10 @@ public class TransactionRepository {
     /**
      * Adds a transaction to the database.
      *
-     * @param amount the amount of the transaction.
+     * @param amount          the amount of the transaction.
      * @param transactionType the type of transaction (e.g., deposit, withdrawal).
-     * @param createdAt the timestamp of when the transaction was created.
-     * @param accountID the ID of the account associated with the transaction.
+     * @param createdAt       the timestamp of when the transaction was created.
+     * @param accountID       the ID of the account associated with the transaction.
      * @throws SQLException if a database access error occurs.
      */
     public void addTransaction(double amount, String transactionType, Timestamp createdAt, long accountID) throws SQLException {
@@ -81,22 +81,23 @@ public class TransactionRepository {
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setLong(1, accountID);
-            ResultSet resultSet = statement.executeQuery();
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    transactionList.add(new Transaction.Builder()
+                            .setId(resultSet.getLong("transaction_id"))
+                            .setTransactionType(Transaction.TransactionType.valueOf(resultSet.getString("transaction_type")))
+                            .setAmount(resultSet.getLong("transaction_id"))
+                            .setCreatedAt(resultSet.getTimestamp("created_at"))
+                            .setAccount(new Account.Builder()
+                                    .setId(resultSet.getLong("account_id"))
+                                    .setCurrency(Account.Currency.valueOf(resultSet.getString("currency")))
+                                    .setBalance(resultSet.getDouble("balance"))
+                                    .setClientId(resultSet.getLong("client_id"))
+                                    .build()).build());
 
-            while (resultSet.next()) {
-                transactionList.add(new Transaction(
-                        resultSet.getLong("transaction_id"),
-                        resultSet.getDouble("amount"),
-                        Transaction.TransactionType.valueOf(resultSet.getString("transaction_type")),
-                        resultSet.getTimestamp("created_at"),
-                        new Account(
-                                resultSet.getLong("account_id"),
-                                Account.Currency.valueOf(resultSet.getString("currency")),
-                                resultSet.getDouble("balance"),
-                                resultSet.getLong("client_id")
-                        )
-                ));
+                }
             }
+
         } catch (SQLException e) {
             logger.log(Level.SEVERE, e.getMessage());
         }

@@ -63,6 +63,13 @@ public class Transaction implements Serializable {
      */
     private Account account;
 
+    private Transaction(Builder builder) {
+        this.id = builder.id;
+        this.amount = builder.amount;
+        this.transactionType = builder.transactionType;
+        this.createdAt = builder.createdAt;
+        this.account = builder.account;
+    }
     /**
      * Returns a string representation of the Transaction object in JSON format.
      *
@@ -77,5 +84,45 @@ public class Transaction implements Serializable {
                 "\n\"created_at\": " + createdAt + "," +
                 "\n\"account\": " + account.toString() +
                 "\n}";
+    }
+
+    /**
+     * Builder class for constructing Transaction instances.
+     */
+    public static class Builder {
+        private long id;
+        private double amount;
+        private TransactionType transactionType;
+        private Timestamp createdAt;
+        private Account account;
+
+        public Builder setId(long id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder setAmount(double amount) {
+            this.amount = amount;
+            return this;
+        }
+
+        public Builder setTransactionType(TransactionType transactionType) {
+            this.transactionType = transactionType;
+            return this;
+        }
+
+        public Builder setCreatedAt(Timestamp createdAt) {
+            this.createdAt = createdAt;
+            return this;
+        }
+
+        public Builder setAccount(Account account) {
+            this.account = account;
+            return this;
+        }
+
+        public Transaction build() {
+            return new Transaction(this);
+        }
     }
 }

@@ -38,6 +38,13 @@ public class Client {
      */
     private List<Account> accounts;
 
+    private Client(Builder builder) {
+        this.id = builder.id;
+        this.firstName = builder.firstName;
+        this.lastName = builder.lastName;
+        this.accounts = builder.accounts;
+    }
+
     /**
      * Returns a string representation of the Client object in JSON-like format.
      *
@@ -51,5 +58,36 @@ public class Client {
                 "\n\"last_name\": \"" + lastName + "\"," +
                 "\n\"accounts\": " + accounts.toString() +
                 "\n}";
+    }
+
+    public static class Builder {
+        private long id;
+        private String firstName;
+        private String lastName;
+        private List<Account> accounts;
+
+        public Builder setId(long id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder setFirstName(String firstName) {
+            this.firstName = firstName;
+            return this;
+        }
+
+        public Builder setLastName(String lastName) {
+            this.lastName = lastName;
+            return this;
+        }
+
+        public Builder setAccounts(List<Account> accounts) {
+            this.accounts = accounts;
+            return this;
+        }
+
+        public Client build() {
+            return new Client(this);
+        }
     }
 }
