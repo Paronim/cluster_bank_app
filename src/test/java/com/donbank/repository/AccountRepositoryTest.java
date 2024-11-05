@@ -1,120 +1,138 @@
 package com.donbank.repository;
 
+import com.donbank.config.Config;
+import com.donbank.db.DatabaseConnector;
 import com.donbank.entity.Account;
+import com.donbank.exception.AccountNotFoundException;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Test class for verifying the functionality of {@link AccountRepository}.
- *
- * <p>
- * This class includes tests for retrieving accounts by client ID,
- * checking the list of accounts, and handling file-related scenarios.
- * </p>
- */
-class AccountRepositoryTest {
+class AccountRepositoryTest{
     private AccountRepository accountRepository;
+    private Connection connection;
+    private Config config;
 
-    /**
-     * Method executed before each test, which initializes the AccountRepository instance.
-     */
     @BeforeEach
-    void setUp() {
+    void setUp() throws SQLException {
+
+        config = Config.getInstance();
+        config.setProperty("db.url", "jdbc:postgresql://localhost:5432/test.app_dbi");
+        config.setProperty("logging.param", "console");
+        connection = DatabaseConnector.getInstance().getConnection();
+
         accountRepository = new AccountRepository();
+
+        connection.setAutoCommit(false);
     }
 
-    /**
-     * Tests retrieving accounts by client ID.
-     *
-     * <p>
-     * This test verifies that the accounts retrieved for a valid client ID
-     * are not null, not empty, and that each account belongs to the specified client.
-     * </p>
-     */
-    @Test
-    void testGetAccountsByIdClient() {
-        int testClientId = 1;
-        List<Account> accounts = accountRepository.getAccountsByIdClient(testClientId);
-
-        assertNotNull(accounts);
-        assertFalse(accounts.isEmpty());
-
-        accounts.forEach(account -> assertEquals(testClientId, account.getClientId()));
+    @AfterEach
+    void end() throws SQLException {
+        connection.rollback();
+        connection.close();
     }
 
-    /**
-     * Tests retrieving the list of accounts.
-     *
-     * <p>
-     * This test checks that the account data is retrieved successfully,
-     * ensuring the list is not null and not empty.
-     * </p>
-     */
     @Test
-    void testGetAccountsData() {
-        List<Account> accounts = accountRepository.getAccountsData();
+    void testGetAccountsByIdClient() throws SQLException {
 
-        assertNotNull(accounts);
-        assertFalse(accounts.isEmpty());
+        accountRepository.addAccount("RUB", 0, 10000L);
+
+        List<Account> accounts = accountRepository.getAccountsByIdClient(10000L);
+
+        assertEquals(accounts.getFirst().getClientId(), 10000L);
+        assertEquals(String.valueOf(accounts.getFirst().getCurrency()), "RUB");
+        assertEquals(accounts.getFirst().getBalance(), 0.0);
+
     }
 
-    /**
-     * Tests retrieving the list of accounts when the file is not found.
-     *
-     * <p>
-     * This test ensures that when an invalid file path is provided,
-     * the method returns an empty list of accounts.
-     * </p>
-     */
     @Test
-    void testGetListAccounts_FileNotFound() {
+    void testGetAccount() throws SQLException, AccountNotFoundException {
+        long id = accountRepository.addAccount("RUB", 0, 10000L).getId();
+
+        Account account = accountRepository.getAccount(id);
+
+        assertEquals(account.getClientId(), 10000L);
+        assertEquals(String.valueOf(account.getCurrency()), "RUB");
+        assertEquals(account.getBalance(), 0.0);
+    }
+
+    @Test
+    void testAddAccount() throws SQLException, AccountNotFoundException {
+        long id = accountRepository.addAccount("RUB", 10, 10000L).getId();
+
+        Account account = accountRepository.getAccount(id);
+
+        assertEquals(account.getClientId(), 10000L);
+        assertEquals(String.valueOf(account.getCurrency()), "RUB");
+        assertEquals(account.getBalance(), 10.0);
+    }
+
+    @Test
+    void testDeleteAccount() throws SQLException {
+        long id = accountRepository.addAccount("RUB", 10, 10000L).getId();
+
+        assertDoesNotThrow(() ->
+            accountRepository.deleteAccount(id)
+        );
+
+        assertThrows(AccountNotFoundException.class, () ->
+            accountRepository.getAccount(id)
+        );
+    }
+
+    @Test
+    void testUpdateAccount() throws SQLException, AccountNotFoundException {
+        long id = accountRepository.addAccount("RUB", 10, 10000L).getId();
+
+        assertDoesNotThrow(() -> {
+            accountRepository.updateAccount(id, "RUB", 1000, 10000L);
+        });
+
+        Account account = accountRepository.getAccount(id);
+
+        assertEquals(account.getClientId(), 10000L);
+        assertEquals(String.valueOf(account.getCurrency()), "RUB");
+        assertEquals(account.getBalance(), 1000.0);
+    }
+
+    @Test
+    void testListAccountsFromCSV_FileNotFound() throws FileNotFoundException {
         String invalidFilePath = "src/test/resources/invalid_accounts.csv";
 
         File tempFile = new File(invalidFilePath);
 
         assertFalse(tempFile.exists());
 
-        AccountRepository invalidAccountRepository = new AccountRepository(invalidFilePath);
+        assertThrows(FileNotFoundException.class, () -> accountRepository.getListAccountsFromCSV(invalidFilePath));
 
-        List<Account> accounts = invalidAccountRepository.getAccountsData();
-        assertNotNull(accounts);
-        assertTrue(accounts.isEmpty());
     }
 
-    /**
-     * Tests retrieving the list of accounts successfully.
-     *
-     * <p>
-     * This test checks that accounts are correctly read from a valid CSV file,
-     * ensuring the size of the list matches the expected count.
-     * </p>
-     *
-     * @throws IOException If an error occurs while writing the test file.
-     */
     @Test
-    void testGetListAccounts_Success() throws IOException {
+    void testGetListAccountsFromCSV_Success() throws IOException {
         String testFilePath = "src/test/resources/test_accounts.csv";
         File testFile = new File(testFilePath);
         FileWriter writer = new FileWriter(testFile);
 
         writer.write("1,USD,100.0,1\n");
-        writer.write("2,EUR,200.0,1\n");
+        writer.write("2,RUB,200.0,1\n");
         writer.write("3,USD,150.0,2\n");
         writer.close();
 
-        AccountRepository testAccountRepository = new AccountRepository(testFilePath);
-
-        List<Account> accounts = testAccountRepository.getAccountsData();
+        List<Account> accounts = accountRepository.getListAccountsFromCSV(testFilePath);
         assertNotNull(accounts);
         assertEquals(3, accounts.size());
 
         testFile.delete();
     }
+
 }

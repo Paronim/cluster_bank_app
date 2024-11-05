@@ -1,0 +1,30 @@
+но€б. 02, 2024 6:55:19 PM com.donbank.repository.AccountRepository getAccount
+SEVERE: Ќе указано значение дл€ параметра 1.
+но€б. 02, 2024 6:57:42 PM com.donbank.repository.AccountRepository getAccount
+SEVERE: Ќе указано значение дл€ параметра 1.
+но€б. 02, 2024 6:58:25 PM com.donbank.repository.AccountRepository getAccount
+SEVERE: Ќе указано значение дл€ параметра 1.
+но€б. 02, 2024 6:59:53 PM com.donbank.repository.AccountRepository getAccount
+SEVERE: Ќе указано значение дл€ параметра 1.
+но€б. 02, 2024 7:01:00 PM com.donbank.repository.AccountRepository getAccount
+SEVERE: Ќе указано значение дл€ параметра 1.
+но€б. 02, 2024 7:02:35 PM com.donbank.repository.AccountRepository getAccount
+SEVERE: Ќе указано значение дл€ параметра 1.
+но€б. 02, 2024 7:03:09 PM com.donbank.repository.AccountRepository getAccount
+SEVERE: Ќе указано значение дл€ параметра 1.
+но€б. 02, 2024 7:03:09 PM com.donbank.service.CLIService changeBalanceAccount
+SEVERE: Cannot invoke "com.donbank.entity.Account.getBalance()" because "updatedAccount" is null
+но€б. 05, 2024 1:47:49 PM com.donbank.config.LoggerConfigTest testFileLoggingSetup
+SEVERE: test
+но€б. 05, 2024 5:06:45 PM com.donbank.service.CLIService changeBalanceAccount
+SEVERE: There are insufficient funds in the account
+но€б. 05, 2024 5:09:11 PM com.donbank.service.CLIService getIntegerInput
+SEVERE: null
+но€б. 05, 2024 5:09:36 PM com.donbank.service.CLIService getCurrency
+SEVERE: Not valid currency
+но€б. 05, 2024 5:09:43 PM com.donbank.service.CLIService getCurrency
+SEVERE: Not valid currency
+но€б. 05, 2024 5:45:19 PM com.donbank.service.CLIService changeBalanceAccount
+SEVERE: An account with this currency not found
+но€б. 05, 2024 6:02:26 PM com.donbank.service.CLIService changeBalanceAccount
+SEVERE: An account with this currency not found

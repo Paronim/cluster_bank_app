@@ -1,112 +1,56 @@
 package com.donbank.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.io.Serializable;
 
 /**
- * Represents a bank account with a unique ID, currency type, balance, and associated client ID.
- * Implements Serializable to allow for object serialization.
+ * The Account class represents a bank account.
+ * It contains information about the account's unique identifier, currency type,
+ * current balance, and the associated client ID.
  */
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class Account implements Serializable {
-
 
     /**
      * Enum representing the available currencies for accounts.
      */
     public enum Currency {
+        /**
+         * Russian Ruble
+         */
         RUB,
+        /**
+         * US Dollar
+         */
         USD
     }
-    /**
-     * the unique identifier for the account.
-     */
-    private int id;
-    /**
-     * the currency type of the account (e.g., RUB, USD).
-     */
 
-    private Currency currency;
     /**
-     *the current balance of the account.
+     * The unique identifier for the account.
+     */
+    private long id;
+
+    /**
+     * The currency type of the account (e.g., RUB, USD).
+     */
+    private Currency currency;
+
+    /**
+     * The current balance of the account.
      */
     private double balance;
-    /**
-     *the unique identifier of the client associated with this account.
-     */
-    private int clientId;
 
     /**
-     * Default constructor for creating an empty Account object.
+     * The unique identifier of the client associated with this account.
      */
-    public Account() {}
-
-    /**
-     * Constructs a new Account with specified attributes.
-     *
-     * @param id        the unique identifier for the account.
-     * @param currency  the currency type of the account (e.g., RUB, USD).
-     * @param balance   the current balance of the account.
-     * @param clientId  the unique identifier of the client associated with this account.
-     */
-    public Account(int id, String currency, double balance, int clientId) {
-        this.id = id;
-        this.currency = Currency.valueOf(currency);
-        this.balance = balance;
-        this.clientId = clientId;
-    }
-
-    /**
-     * Returns the currency of the account.
-     *
-     * @return the currency type as a String.
-     */
-    public String getCurrency() {
-        return currency.toString();
-    }
-
-    /**
-     * Sets the currency of the account.
-     *
-     * @param currency the currency type to set.
-     */
-    public void setCurrency(String currency) {
-        this.currency = Currency.valueOf(currency);
-    }
-
-    /**
-     * Returns the current balance of the account.
-     *
-     * @return the balance as a double.
-     */
-    public double getBalance() {
-        return balance;
-    }
-
-    /**
-     * Sets the balance of the account.
-     *
-     * @param balance the balance to set.
-     */
-    public void setBalance(double balance) {
-        this.balance = balance;
-    }
-
-    /**
-     * Returns the client ID associated with this account.
-     *
-     * @return the client ID as an int.
-     */
-    public int getClientId() {
-        return clientId;
-    }
-
-    /**
-     * Sets the client ID associated with this account.
-     *
-     * @param clientId the client ID to set.
-     */
-    public void setClientId(int clientId) {
-        this.clientId = clientId;
-    }
+    private long clientId;
 
     /**
      * Returns a string representation of the Account object in JSON-like format.

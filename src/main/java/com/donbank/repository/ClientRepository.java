@@ -1,81 +1,148 @@
 package com.donbank.repository;
 
+import com.donbank.config.LoggerConfig;
+import com.donbank.db.DatabaseConnector;
 import com.donbank.entity.Account;
 import com.donbank.entity.Client;
+import lombok.Getter;
 
 import java.io.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * ClientRepository manages the storage and retrieval of client data.
- * It loads client information from a specified CSV file and provides methods to access client records.
+ * It provides methods to retrieve clients from the database and CSV files.
  */
 public class ClientRepository {
 
-    private final Map<Integer, Client> clientsData;
-    private String FILE_PATH = "src/main/resources/clients.csv";
+    private final Logger logger;
+    private final Connection connection;
+
+    @Getter
+    private Client client;
 
     /**
-     * Initializes a new instance of ClientRepository with the specified list of accounts.
-     * The repository will use the default file path for client data.
+     * Initializes a new instance of ClientRepository with the specified client ID and accounts.
      *
-     * @param accounts the list of accounts associated with the clients.
+     * @param id the unique identifier of the client.
+     * @param accounts the list of accounts associated with the client.
      */
-    public ClientRepository(List<Account> accounts) {
-        this.clientsData = getListClients(accounts);
+    public ClientRepository(long id, List<Account> accounts) {
+        this.logger = LoggerConfig.getInstance().getLogger();
+        this.connection = DatabaseConnector.getInstance().getConnection();
+        this.client = getClient(id, accounts);
     }
 
     /**
-     * Initializes a new instance of ClientRepository with the specified list of accounts
-     * and a custom file path for client data.
+     * Finds a client by their unique identifier in the database.
      *
-     * @param accounts the list of accounts associated with the clients.
-     * @param path the file path to the CSV file containing client data.
+     * @param id the unique identifier of the client.
+     * @param accounts the list of accounts to associate with the client.
+     * @return the Client object associated with the specified ID, or null if not found.
      */
-    public ClientRepository(List<Account> accounts, String path) {
-        this.FILE_PATH = path;
-        this.clientsData = getListClients(accounts);
-    }
+    public Client getClient(long id, List<Account> accounts) {
+        String query = "SELECT * FROM app_dbi.clients c WHERE c.id = ?";
+        Client client = null;
 
-    /**
-     * Finds a client by their unique identifier.
-     *
-     * @param id the unique identifier of the client to retrieve.
-     * @return the Client object associated with the specified id, or null if not found.
-     */
-    public Client findById(int id) {
-        return clientsData.get(id);
-    }
+        try (PreparedStatement statement = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+            statement.setLong(1, id);
+            ResultSet resultSet = statement.executeQuery();
 
-    /**
-     * Loads client data from the CSV file and associates it with the provided accounts.
-     *
-     * @param accounts the list of accounts used to filter clients.
-     * @return a map where the key is the client ID and the value is the corresponding Client object.
-     */
-    private Map<Integer, Client> getListClients(List<Account> accounts) {
-        Map<Integer, Client> clientList = new HashMap<>();
-        try {
-            File clients = new File(FILE_PATH);
-            Scanner reader = new Scanner(clients);
-            while (reader.hasNextLine()) {
-                String[] data = reader.nextLine().split(",");
-
-                int idClient = Integer.parseInt(data[0]);
-                List<Account> filteredAccounts = accounts.stream()
-                        .filter(a -> a.getClientId() == idClient)
-                        .toList();
-
-                clientList.put(idClient, new Client(idClient, data[1], data[2], filteredAccounts));
+            if (resultSet.first()) {
+                client = new Client(
+                        resultSet.getLong("id"),
+                        resultSet.getString("first_name"),
+                        resultSet.getString("last_name"),
+                        accounts
+                );
+            } else {
+                logger.log(Level.WARNING, "No client found with the specified ID.");
             }
-            reader.close();
-
-            return clientList;
-        } catch (IOException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error retrieving client: " + e.getMessage());
         }
+
+        return client;
+    }
+
+    /**
+     * Adds a new client to the database.
+     *
+     * @param firstName the first name of the client.
+     * @param lastName the last name of the client.
+     * @return the unique ID of the newly created client.
+     * @throws SQLException if a database access error occurs.
+     */
+    public long addClient(String firstName, String lastName) throws SQLException {
+        long id = 0;
+        String query = "INSERT INTO app_dbi.clients (first_name, last_name) VALUES (?, ?) RETURNING id";
+        PreparedStatement statement = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+
+        statement.setString(1, firstName);
+        statement.setString(2, lastName);
+
+        ResultSet resultSet = statement.executeQuery();
+
+        if (resultSet.first()) {
+            id = resultSet.getLong("id");
+        } else {
+            logger.log(Level.WARNING, "Error creating new client.");
+        }
+
+        return id;
+    }
+
+    /**
+     * Deletes a client from the database based on their unique ID.
+     *
+     * @param id the unique identifier of the client to delete.
+     * @throws SQLException if a database access error occurs.
+     */
+    public void deleteClient(long id) throws SQLException {
+        String query = "DELETE FROM app_dbi.clients c WHERE c.id = ?";
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setLong(1, id);
+
+        int rowsAffected = statement.executeUpdate();
+
+        if (rowsAffected > 0) {
+            logger.log(Level.INFO, "Deleted client successfully.");
+        } else {
+            logger.log(Level.WARNING, "No client found with the specified ID.");
+        }
+    }
+
+    /**
+     * Loads client data from a CSV file and associates it with the provided accounts.
+     *
+     * @param accounts the list of accounts to associate with each client based on their ID.
+     * @param path the file path to the CSV file containing client data.
+     * @return a list of Client objects parsed from the CSV file.
+     * @throws FileNotFoundException if the CSV file is not found.
+     */
+    public List<Client> getListClientsFromCSV(List<Account> accounts, String path) throws FileNotFoundException {
+        List<Client> clientList = new ArrayList<>();
+        File clientsFile = new File(path);
+        Scanner reader = new Scanner(clientsFile);
+
+        while (reader.hasNextLine()) {
+            String[] data = reader.nextLine().split(",");
+            int idClient = Integer.parseInt(data[0]);
+
+            List<Account> filteredAccounts = accounts.stream()
+                    .filter(a -> a.getClientId() == idClient)
+                    .toList();
+
+            clientList.add(new Client(idClient, data[1], data[2], filteredAccounts));
+        }
+
+        reader.close();
         return clientList;
     }
 }

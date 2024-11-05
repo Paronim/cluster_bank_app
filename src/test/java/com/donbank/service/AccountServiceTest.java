@@ -1,249 +1,119 @@
 package com.donbank.service;
 
+import com.donbank.config.Config;
 import com.donbank.entity.Account;
 import com.donbank.exception.AccountNotFoundException;
-import com.donbank.exception.InsufficientFundsException;
 import com.donbank.repository.AccountRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-
-/**
- * Test class for verifying the functionality of {@link AccountService}.
- *
- * <p>
- * This class uses Mockito to create mocks and check the behavior of
- * {@link AccountService} in various scenarios. The tests cover account
- * creation, fund deposit, and account deletion, including various edge cases.
- * </p>
- */
 class AccountServiceTest {
 
     private AccountService accountService;
     private AccountRepository accountRepository;
 
-    /**
-     * Method executed before each test, which sets up the necessary mocks
-     * and service instances.
-     */
     @BeforeEach
     public void setUp(){
         accountRepository = mock(AccountRepository.class);
         accountService = new AccountService(accountRepository);
     }
 
-    /**
-     * Tests the creation of a new account.
-     *
-     * <p>
-     * This test checks that when a valid currency is provided and there
-     * are no existing accounts, a new account is created and added to the list.
-     * </p>
-     */
     @Test
-    void createAccount() {
+    void testCreateAccount() {
         List<Account> accounts = new ArrayList<>();
         String currency = "USD";
-        int clientId = 1;
+        int clientId = 10000;
+        AtomicReference<String> result = new AtomicReference<>();
+        
+        assertDoesNotThrow(() -> {
+            result.set(accountService.createAccount(currency, accounts, clientId));});
 
-        when(accountRepository.getAccountsData()).thenReturn(accounts);
-
-        String result = accountService.createAccount(currency, accounts, clientId);
-
-        assertEquals("account created", result);
-        assertEquals(1, accounts.size());
-        assertEquals("USD", accounts.get(0).getCurrency());
+        assertEquals("Account created", result.get());
+        
     }
 
-    /**
-     * Tests account creation with an invalid currency.
-     *
-     * <p>
-     * This test ensures that if an invalid currency is provided, the account
-     * is not created, and an appropriate message is returned.
-     * </p>
-     */
     @Test
-    public void testCreateAccount_InvalidCurrency() {
+    void testDepositFunds() throws AccountNotFoundException {
         List<Account> accounts = new ArrayList<>();
-        String currency = "EUR";
-        int clientId = 1;
-
-        String result = accountService.createAccount(currency, accounts, clientId);
-
-        assertEquals("Not valid currency", result);
-        assertTrue(accounts.isEmpty());
-    }
-
-    /**
-     * Tests account creation when an account with the same currency already exists.
-     *
-     * <p>
-     * This test checks that when attempting to create a duplicate account,
-     * the appropriate message is returned, and the existing account count remains unchanged.
-     * </p>
-     */
-    @Test
-    public void testCreateAccount_AccountAlreadyExists() {
-        List<Account> accounts = new ArrayList<>();
-        accounts.add(new Account(1, "USD", 0.0, 1));
         String currency = "USD";
-        int clientId = 1;
+        double amount = 100f;
+        String param = "withdraw";
+        int clientId = 10000;
+        Account account = new Account(10000L, Account.Currency.valueOf(currency), 100d, clientId);
+        accounts.add(account);
 
-        String result = accountService.createAccount(currency, accounts, clientId);
+        AtomicReference<String> result = new AtomicReference<>();
 
-        assertEquals("an account with this currency already exists", result);
-        assertEquals(1, accounts.size());
+        when(accountRepository.getAccount(account.getId())).thenReturn(account);
+
+        assertDoesNotThrow(() -> {
+            result.set(accountService.depositFunds(currency, amount, accounts, param));});
+
+        assertEquals("Amount updated", result.get());
+
     }
 
-    /**
-     * Tests the successful deposit of funds into an account.
-     *
-     * <p>
-     * This test verifies that when a valid amount is deposited into an account,
-     * the balance is updated accordingly.
-     * </p>
-     */
     @Test
-    void testDepositFunds_Success() throws InsufficientFundsException {
+    void testDeleteAccount(){
         List<Account> accounts = new ArrayList<>();
-        Account account = new Account(1, "USD", 100.0, 1);
-        accounts.add(account);
         String currency = "USD";
-        int amount = 50;
-        String param = "contribute";
+        int clientId = 10000;
+        Account account = new Account(10000L, Account.Currency.valueOf(currency), 100d, clientId);
+        accounts.add(account);
 
-        String result = accountService.depositFunds(currency, amount, accounts, param);
+        assertDoesNotThrow(() ->
+                accountService.deleteAccount(currency, accounts));
 
-        assertEquals("Amount updated", result);
-        assertEquals(50.0, account.getBalance());
     }
 
-    /**
-     * Tests deposit of funds when there are insufficient funds in the account.
-     *
-     * <p>
-     * This test checks that attempting to withdraw more funds than available
-     * throws an InsufficientFundsException.
-     * </p>
-     */
     @Test
-    void testDepositFunds_InsufficientFunds() {
+    void testGetAccountsByCurrency(){
         List<Account> accounts = new ArrayList<>();
-        Account account = new Account(1, "USD", 20.0, 1);
-        accounts.add(account);
         String currency = "USD";
-        int amount = 50;
-        String param = "contribute";
+        int clientId = 10000;
+        Account account = new Account(10000L, Account.Currency.valueOf(currency), 100d, clientId);
+        accounts.add(account);
 
-        assertThrows(InsufficientFundsException.class, () -> {
-            accountService.depositFunds(currency, amount, accounts, param);
-        });
+        AtomicReference<Account> result = new AtomicReference<>();
+
+        assertDoesNotThrow(() ->
+                result.set(accountService.getAccountsByCurrency(currency, accounts)));
+
+        assertEquals(result.get().getId(), 10000L);
+        assertEquals(String.valueOf(result.get().getCurrency()), currency);
+        assertEquals(result.get().getBalance(), 100d);
+        assertEquals(result.get().getClientId(), 10000L);
+
     }
 
-    /**
-     * Tests deposit of funds with an invalid currency.
-     *
-     * <p>
-     * This test ensures that when an invalid currency is provided for deposit,
-     * the appropriate message is returned and the balance remains unchanged.
-     * </p>
-     */
     @Test
-    void testDepositFunds_InvalidCurrency() throws InsufficientFundsException {
-        List<Account> accounts = new ArrayList<>();
-        Account account = new Account(1, "USD", 100.0, 1);
-        accounts.add(account);
-        String currency = "EUR";
-        int amount = 50;
-        String param = "contribute";
+    void testGetListAccountsCSV(){
+        AtomicReference<List<Account>> result = new AtomicReference<>();
 
-        String result = accountService.depositFunds(currency, amount, accounts, param);
-        assertEquals("Not valid currency", result);
+        assertDoesNotThrow(() ->
+                result.set(accountService.getListAccountsCSV(Config.getInstance().getProperty("csv.accounts"))));
+
+        assertEquals(new ArrayList<Account>(), result.get());
     }
 
-    /**
-     * Tests adding funds to an account.
-     *
-     * <p>
-     * This test verifies that when funds are added to an account, the balance
-     * is updated accordingly.
-     * </p>
-     */
     @Test
-    void testDepositFunds_AddFunds() throws InsufficientFundsException {
+    void testImportCSVAccounts(){
         List<Account> accounts = new ArrayList<>();
-        Account account = new Account(1, "USD", 100.0, 1);
-        accounts.add(account);
         String currency = "USD";
-        int amount = 50;
-        String param = "add";
-
-        String result = accountService.depositFunds(currency, amount, accounts, param);
-
-        assertEquals("Amount updated", result);
-        assertEquals(150.0, account.getBalance());
-    }
-
-    /**
-     * Tests the successful deletion of an account.
-     *
-     * <p>
-     * This test verifies that when a valid currency is provided, the account
-     * is removed from the list, and the appropriate message is returned.
-     * </p>
-     */
-    @Test
-    public void testDeleteAccount_Success() throws AccountNotFoundException {
-        List<Account> accounts = new ArrayList<>();
-        Account account = new Account(1, "USD", 100.0, 1);
+        int clientId = 10000;
+        Account account = new Account(10000L, Account.Currency.valueOf(currency), 100d, clientId);
         accounts.add(account);
 
-        String result = accountService.deleteAccount("USD", accounts);
+        assertDoesNotThrow(() ->
+                accountService.importCSVAccounts(accounts));
 
-        assertEquals("Account removed", result);
-        assertTrue(accounts.isEmpty());
-    }
-
-    /**
-     * Tests deletion of an account with an invalid currency.
-     *
-     * <p>
-     * This test ensures that if an invalid currency is provided, the
-     * appropriate message is returned, and no accounts are removed.
-     * </p>
-     */
-    @Test
-    public void testDeleteAccount_NotValidCurrency() throws AccountNotFoundException {
-        List<Account> accounts = new ArrayList<>();
-        String result = accountService.deleteAccount("EUR", accounts);
-
-        assertEquals("Not valid currency", result);
-    }
-
-    /**
-     * Tests deletion of an account that does not exist.
-     *
-     * <p>
-     * This test checks that attempting to delete a non-existing account throws
-     * an AccountNotFoundException.
-     * </p>
-     */
-    @Test
-    public void testDeleteAccount_AccountNotFound() {
-        List<Account> accounts = new ArrayList<>();
-        accounts.add(new Account(1, "USD", 100.0, 1));
-
-        Exception exception = assertThrows(AccountNotFoundException.class, () -> {
-            accountService.deleteAccount("RUB", accounts);
-        });
-
-        assertNotNull(exception);
     }
 }

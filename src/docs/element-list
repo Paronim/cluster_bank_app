@@ -1,4 +1,6 @@
 com.donbank
+com.donbank.config
+com.donbank.db
 com.donbank.entity
 com.donbank.exception
 com.donbank.repository
