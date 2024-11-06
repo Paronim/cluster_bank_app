@@ -1,5 +1,6 @@
 package com.donbank.repository;
 
+import com.donbank.config.Config;
 import com.donbank.config.LoggerConfig;
 import com.donbank.db.DatabaseConnector;
 import com.donbank.entity.Account;
@@ -26,6 +27,11 @@ public class ClientRepository {
 
     @Getter
     private Client client;
+
+    public ClientRepository() {
+        this.logger = LoggerConfig.getInstance().getLogger();
+        this.connection = DatabaseConnector.getInstance().getConnection();
+    }
 
     /**
      * Initializes a new instance of ClientRepository with the specified client ID and accounts.
@@ -134,24 +140,32 @@ public class ClientRepository {
         List<Client> clientList = new ArrayList<>();
         File clientsFile = new File(path);
         Scanner reader = new Scanner(clientsFile);
+        int index = 1;
+        try {
+            while (reader.hasNextLine()) {
+                String[] data = reader.nextLine().split(",");
+                int idClient = Integer.parseInt(data[0]);
 
-        while (reader.hasNextLine()) {
-            String[] data = reader.nextLine().split(",");
-            int idClient = Integer.parseInt(data[0]);
+                List<Account> filteredAccounts = accounts.stream()
+                        .filter(a -> a.getClientId() == idClient)
+                        .toList();
 
-            List<Account> filteredAccounts = accounts.stream()
-                    .filter(a -> a.getClientId() == idClient)
-                    .toList();
+                clientList.add(new Client.Builder()
+                        .setId(idClient)
+                        .setFirstName(data[1])
+                        .setLastName(data[2])
+                        .setAccounts(filteredAccounts)
+                        .build());
 
-            clientList.add(new Client.Builder()
-                    .setId(idClient)
-                    .setFirstName(data[1])
-                    .setLastName(data[2])
-                    .setAccounts(filteredAccounts)
-                    .build());
+                index++;
+            }
+
+            reader.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage() + " in file " + Config.getInstance().getProperty("csv.clients") + " on line " + index);
+            logger.log(Level.SEVERE, e.getMessage());
         }
 
-        reader.close();
         return clientList;
     }
 }

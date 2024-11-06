@@ -7,7 +7,6 @@ import com.donbank.repository.AccountRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -42,20 +41,19 @@ class AccountServiceTest {
 
     @Test
     void testDepositFunds() throws AccountNotFoundException {
-        List<Account> accounts = new ArrayList<>();
         String currency = "USD";
         double amount = 100f;
+        String name = "test";
         String param = "withdraw";
         int clientId = 10000;
-        Account account = new Account(10000L, Account.Currency.valueOf(currency), 100d, clientId);
-        accounts.add(account);
+        Account account = new Account(10000L, Account.Currency.valueOf(currency), 100d, clientId, name);
 
         AtomicReference<String> result = new AtomicReference<>();
 
         when(accountRepository.getAccount(account.getId())).thenReturn(account);
 
         assertDoesNotThrow(() -> {
-            result.set(accountService.depositFunds(currency, amount, accounts, param));});
+            result.set(accountService.depositFunds(account, amount, param));});
 
         assertEquals("Amount updated", result.get());
 
@@ -63,14 +61,13 @@ class AccountServiceTest {
 
     @Test
     void testDeleteAccount(){
-        List<Account> accounts = new ArrayList<>();
         String currency = "USD";
+        String name = "test";
         int clientId = 10000;
-        Account account = new Account(10000L, Account.Currency.valueOf(currency), 100d, clientId);
-        accounts.add(account);
+        Account account = new Account(10000L, Account.Currency.valueOf(currency), 100d, clientId, name);
 
         assertDoesNotThrow(() ->
-                accountService.deleteAccount(currency, accounts));
+                accountService.deleteAccount(account));
 
     }
 
@@ -78,8 +75,9 @@ class AccountServiceTest {
     void testGetAccountsByCurrency(){
         List<Account> accounts = new ArrayList<>();
         String currency = "USD";
+        String name = "test";
         int clientId = 10000;
-        Account account = new Account(10000L, Account.Currency.valueOf(currency), 100d, clientId);
+        Account account = new Account(10000L, Account.Currency.valueOf(currency), 100d, clientId, name);
         accounts.add(account);
 
         AtomicReference<Account> result = new AtomicReference<>();
@@ -108,8 +106,9 @@ class AccountServiceTest {
     void testImportCSVAccounts(){
         List<Account> accounts = new ArrayList<>();
         String currency = "USD";
+        String name = "test";
         int clientId = 10000;
-        Account account = new Account(10000L, Account.Currency.valueOf(currency), 100d, clientId);
+        Account account = new Account(10000L, Account.Currency.valueOf(currency), 100d, clientId, name);
         accounts.add(account);
 
         assertDoesNotThrow(() ->

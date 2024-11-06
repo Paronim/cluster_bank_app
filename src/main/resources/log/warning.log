@@ -6,3 +6,9 @@ WARNING: No account found with the specified ID.
 WARNING: test
 но€б. 05, 2024 1:47:49 PM com.donbank.config.LoggerConfigTest testFileLoggingSetup
 WARNING: test
+но€б. 06, 2024 12:57:30 PM com.donbank.repository.ClientRepository getClient
+WARNING: No client found with the specified ID.
+но€б. 06, 2024 12:58:21 PM com.donbank.repository.ClientRepository getClient
+WARNING: No client found with the specified ID.
+но€б. 06, 2024 1:10:29 PM com.donbank.repository.ClientRepository getClient
+WARNING: No client found with the specified ID.

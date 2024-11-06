@@ -1,6 +1,5 @@
 package com.donbank.service;
 
-import com.donbank.config.Config;
 import com.donbank.entity.Account;
 import com.donbank.exception.AccountNotFoundException;
 import com.donbank.exception.InsufficientFundsException;
@@ -52,26 +51,23 @@ public class AccountService {
     /**
      * Modifies the balance of an account by depositing or withdrawing funds based on the specified action.
      *
-     * @param currency the currency of the account.
      * @param amount   the amount of money to deposit or withdraw.
-     * @param accounts the list of accounts associated with the client.
      * @param param    specifies whether to "withdraw" or "deposit".
      * @return a message indicating the outcome of the operation.
      * @throws InsufficientFundsException if attempting to withdraw more than the account balance.
      * @throws AccountNotFoundException   if no account with the specified currency is found.
      * @throws SQLException               if a database access error occurs.
      */
-    public String depositFunds(String currency, double amount, List<Account> accounts, String param)
+    public String depositFunds(Account account, double amount, String param)
             throws InsufficientFundsException, AccountNotFoundException, SQLException {
         boolean isWithdraw = Objects.equals(param, "withdraw");
-        Account account = getAccountsByCurrency(currency, accounts);
 
         if (isWithdraw && account.getBalance() < amount) {
             throw new InsufficientFundsException();
         }
 
         double newBalance = isWithdraw ? account.getBalance() - amount : account.getBalance() + amount;
-        accountRepository.updateAccount(account.getId(), String.valueOf(account.getCurrency()), newBalance, account.getClientId());
+        accountRepository.updateAccount(account.getId(), String.valueOf(account.getCurrency()), newBalance, account.getClientId(), account.getName());
 
         Account updatedAccount = accountRepository.getAccount(account.getId());
         account.setBalance(updatedAccount.getBalance());
@@ -89,27 +85,23 @@ public class AccountService {
      * @throws SQLException if a database access error occurs.
      */
     public String createAccount(String currency, List<Account> accounts, int clientId) throws SQLException {
-        boolean accountExists = accounts.stream().anyMatch(a -> Objects.equals(String.valueOf(a.getCurrency()), currency));
-        if (!accountExists) {
-            accounts.add(accountRepository.addAccount(currency.toUpperCase(), 0, clientId));
-            return "Account created";
-        }
-        return "An account with this currency already exists";
+
+        long count = accounts.stream().filter(a -> a.getCurrency().equals(Account.Currency.valueOf(currency))).count();
+
+        String name = currency + " " + (count + 1);
+
+        accounts.add(accountRepository.addAccount(currency.toUpperCase(), 0, clientId, name));
+        return "Account created";
+
     }
 
     /**
      * Deletes an account with the specified currency from the client's account list.
      *
-     * @param currency the currency of the account to be deleted.
-     * @param accounts the list of accounts associated with the client.
      * @throws AccountNotFoundException if no account with the specified currency is found.
      * @throws SQLException             if a database access error occurs.
      */
-    public void deleteAccount(String currency, List<Account> accounts) throws AccountNotFoundException, SQLException {
-        Account account = accounts.stream()
-                .filter(a -> Objects.equals(String.valueOf(a.getCurrency()), currency))
-                .findFirst()
-                .orElseThrow(AccountNotFoundException::new);
+    public void deleteAccount(Account account) throws AccountNotFoundException, SQLException {
         accountRepository.deleteAccount(account.getId());
     }
 
@@ -147,7 +139,7 @@ public class AccountService {
      */
     public void importCSVAccounts(List<Account> accounts) throws SQLException {
         for (Account account : accounts) {
-            accountRepository.addAccount(String.valueOf(account.getCurrency()), account.getBalance(), account.getClientId());
+            accountRepository.addAccount(String.valueOf(account.getCurrency()), account.getBalance(), account.getClientId(), account.getName());
         }
     }
 }

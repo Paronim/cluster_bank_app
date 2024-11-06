@@ -49,16 +49,11 @@ public class TransactionService {
     /**
      * Retrieves all transactions associated with an account based on the specified currency.
      *
-     * @param currency the currency of the account for which transactions are to be retrieved.
-     * @param accounts the list of accounts associated with the client.
      * @return a list of Transaction objects associated with the specified account.
      * @throws AccountNotFoundException if no account with the specified currency is found.
      */
-    public List<Transaction> getTransactions(String currency, List<Account> accounts) throws AccountNotFoundException {
-        Account account = accounts.stream()
-                .filter(a -> Objects.equals(String.valueOf(a.getCurrency()), currency))
-                .findFirst()
-                .orElseThrow(AccountNotFoundException::new);
+    public List<Transaction> getTransactions(Account account) throws AccountNotFoundException {
+
         return transactionRepository.getAllTransactionByAccountID(account.getId());
     }
 }

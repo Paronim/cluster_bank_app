@@ -1,8 +1,6 @@
 package com.donbank.service;
 
 import com.donbank.config.Config;
-import com.donbank.entity.Account;
-import com.donbank.entity.Client;
 import com.donbank.repository.ClientRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +19,20 @@ class ClientServiceTest {
     public void setUp() {
         clientRepository = mock(ClientRepository.class);
         clientService = new ClientService(clientRepository);
+    }
+
+    @Test
+    void testAddClient(){
+        assertDoesNotThrow(() ->
+                clientService.addClient("test", "test"));
+
+    }
+
+    @Test
+    void testDeleteClient(){
+        assertDoesNotThrow(() ->
+                clientService.deleteClient(1000));
+
     }
 
     @Test

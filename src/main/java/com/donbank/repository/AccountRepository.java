@@ -1,5 +1,6 @@
 package com.donbank.repository;
 
+import com.donbank.config.Config;
 import com.donbank.config.LoggerConfig;
 import com.donbank.db.DatabaseConnector;
 import com.donbank.entity.Account;
@@ -53,6 +54,7 @@ public class AccountRepository {
                             .setCurrency(Account.Currency.valueOf(resultSet.getString("currency")))
                             .setBalance(resultSet.getDouble("balance"))
                             .setClientId(resultSet.getLong("client_id"))
+                            .setName(resultSet.getString("name"))
                             .build()
                     );
                 }
@@ -81,6 +83,7 @@ public class AccountRepository {
                             .setCurrency(Account.Currency.valueOf(resultSet.getString("currency")))
                             .setBalance(resultSet.getDouble("balance"))
                             .setClientId(resultSet.getLong("client_id"))
+                            .setName(resultSet.getString("name"))
                             .build();
                 } else {
                     logger.log(Level.WARNING, "No account found with the specified ID.");
@@ -104,14 +107,15 @@ public class AccountRepository {
      * @return the Account object created in the database.
      * @throws SQLException if a database access error occurs.
      */
-    public Account addAccount(String currency, double balance, long clientID) throws SQLException {
+    public Account addAccount(String currency, double balance, long clientID, String name) throws SQLException {
         Account account = null;
-        String query = "INSERT INTO app_dbi.accounts (currency, balance, client_id) VALUES (?, ?, ?) RETURNING id, currency, balance, client_id";
+        String query = "INSERT INTO app_dbi.accounts (currency, balance, client_id, name) VALUES (?, ?, ?, ?) RETURNING id, currency, balance, client_id, name";
         try (PreparedStatement statement = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
 
             statement.setString(1, currency);
             statement.setDouble(2, balance);
             statement.setLong(3, clientID);
+            statement.setString(4, name);
 
             try (ResultSet resultSet = statement.executeQuery()) {
 
@@ -121,6 +125,7 @@ public class AccountRepository {
                             .setCurrency(Account.Currency.valueOf(resultSet.getString("currency")))
                             .setBalance(resultSet.getDouble("balance"))
                             .setClientId(resultSet.getLong("client_id"))
+                            .setName(resultSet.getString("name"))
                             .build();
                 } else {
                     logger.log(Level.WARNING, "No account found with the specified ID.");
@@ -163,13 +168,14 @@ public class AccountRepository {
      * @param clientID the unique identifier of the client associated with this account.
      * @throws SQLException if a database access error occurs.
      */
-    public void updateAccount(long id, String currency, double balance, long clientID) throws SQLException, AccountNotFoundException {
-        String query = "UPDATE app_dbi.accounts SET currency = ?, balance = ?, client_id = ? WHERE id = ?";
+    public void updateAccount(long id, String currency, double balance, long clientID, String name) throws SQLException, AccountNotFoundException {
+        String query = "UPDATE app_dbi.accounts SET currency = ?, balance = ?, client_id = ?, name = ? WHERE id = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, currency);
             statement.setDouble(2, balance);
             statement.setLong(3, clientID);
-            statement.setLong(4, id);
+            statement.setString(4, name);
+            statement.setLong(5, id);
 
             int rowsAffected = statement.executeUpdate();
 
@@ -193,16 +199,25 @@ public class AccountRepository {
         List<Account> accountList = new ArrayList<>();
         File accountsFile = new File(path);
         Scanner reader = new Scanner(accountsFile);
+        int index = 1;
+        try {
 
-        while (reader.hasNextLine()) {
-            String[] data = reader.nextLine().split(",");
-            accountList.add(new Account.Builder().setId(Integer.parseInt(data[0]))
-                            .setCurrency(Account.Currency.valueOf(data[1]))
-                            .setBalance(Double.parseDouble(data[2]))
-                            .setClientId(Integer.parseInt(data[3])).build()
-            );
+            while (reader.hasNextLine()) {
+                String[] data = reader.nextLine().split(",");
+                accountList.add(new Account.Builder().setId(Integer.parseInt(data[0]))
+                        .setCurrency(Account.Currency.valueOf(data[1]))
+                        .setBalance(Double.parseDouble(data[2]))
+                        .setClientId(Integer.parseInt(data[3]))
+                        .setName(data[4])
+                        .build()
+                );
+                index++;
+            }
+            reader.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage() + " in file " + Config.getInstance().getProperty("csv.accounts") + " on line " + index);
+            logger.log(Level.SEVERE, e.getMessage());
         }
-        reader.close();
 
         return accountList;
     }

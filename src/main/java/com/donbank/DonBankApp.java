@@ -30,7 +30,7 @@ public class DonBankApp {
      *             These can be used to configure application behavior (if applicable).
      * @throws SQLException if there is an error connecting to the database or executing SQL queries.
      */
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) {
         CLIService cliService = new CLIService();
         cliService.start();
     }

@@ -73,7 +73,8 @@ public class TransactionRepository {
                        t.account_id,
                        a.currency,
                        a.balance,
-                       a.client_id
+                       a.client_id,
+                       a.name
                 FROM app_dbi.transactions t
                 LEFT JOIN app_dbi.accounts a ON t.account_id = a.id
                 WHERE t.account_id = ?
@@ -86,13 +87,14 @@ public class TransactionRepository {
                     transactionList.add(new Transaction.Builder()
                             .setId(resultSet.getLong("transaction_id"))
                             .setTransactionType(Transaction.TransactionType.valueOf(resultSet.getString("transaction_type")))
-                            .setAmount(resultSet.getLong("transaction_id"))
+                            .setAmount(resultSet.getLong("amount"))
                             .setCreatedAt(resultSet.getTimestamp("created_at"))
                             .setAccount(new Account.Builder()
                                     .setId(resultSet.getLong("account_id"))
                                     .setCurrency(Account.Currency.valueOf(resultSet.getString("currency")))
                                     .setBalance(resultSet.getDouble("balance"))
                                     .setClientId(resultSet.getLong("client_id"))
+                                    .setName(resultSet.getString("name"))
                                     .build()).build());
 
                 }

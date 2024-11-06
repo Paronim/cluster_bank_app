@@ -45,7 +45,7 @@ class AccountRepositoryTest{
     @Test
     void testGetAccountsByIdClient() throws SQLException {
 
-        accountRepository.addAccount("RUB", 0, 10000L);
+        accountRepository.addAccount("RUB", 0, 10000L, "test");
 
         List<Account> accounts = accountRepository.getAccountsByIdClient(10000L);
 
@@ -57,7 +57,7 @@ class AccountRepositoryTest{
 
     @Test
     void testGetAccount() throws SQLException, AccountNotFoundException {
-        long id = accountRepository.addAccount("RUB", 0, 10000L).getId();
+        long id = accountRepository.addAccount("RUB", 0, 10000L, "test").getId();
 
         Account account = accountRepository.getAccount(id);
 
@@ -68,7 +68,7 @@ class AccountRepositoryTest{
 
     @Test
     void testAddAccount() throws SQLException, AccountNotFoundException {
-        long id = accountRepository.addAccount("RUB", 10, 10000L).getId();
+        long id = accountRepository.addAccount("RUB", 10, 10000L, "test").getId();
 
         Account account = accountRepository.getAccount(id);
 
@@ -79,7 +79,7 @@ class AccountRepositoryTest{
 
     @Test
     void testDeleteAccount() throws SQLException {
-        long id = accountRepository.addAccount("RUB", 10, 10000L).getId();
+        long id = accountRepository.addAccount("RUB", 10, 10000L, "test").getId();
 
         assertDoesNotThrow(() ->
             accountRepository.deleteAccount(id)
@@ -92,10 +92,10 @@ class AccountRepositoryTest{
 
     @Test
     void testUpdateAccount() throws SQLException, AccountNotFoundException {
-        long id = accountRepository.addAccount("RUB", 10, 10000L).getId();
+        long id = accountRepository.addAccount("RUB", 10, 10000L, "test").getId();
 
         assertDoesNotThrow(() -> {
-            accountRepository.updateAccount(id, "RUB", 1000, 10000L);
+            accountRepository.updateAccount(id, "RUB", 1000, 10000L, "test");
         });
 
         Account account = accountRepository.getAccount(id);
@@ -123,9 +123,9 @@ class AccountRepositoryTest{
         File testFile = new File(testFilePath);
         FileWriter writer = new FileWriter(testFile);
 
-        writer.write("1,USD,100.0,1\n");
-        writer.write("2,RUB,200.0,1\n");
-        writer.write("3,USD,150.0,2\n");
+        writer.write("1,USD,100.0,1,USD 1\n");
+        writer.write("2,RUB,200.0,1,RUB 1\n");
+        writer.write("3,USD,150.0,2,USD 1\n");
         writer.close();
 
         List<Account> accounts = accountRepository.getListAccountsFromCSV(testFilePath);

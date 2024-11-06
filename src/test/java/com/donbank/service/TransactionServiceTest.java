@@ -34,16 +34,15 @@ class TransactionServiceTest {
 
     @Test
     void testGetTransactions() {
-        List<Account> accounts = new ArrayList<>();
         String currency = "USD";
+        String name = "test";
         int clientId = 10000;
-        Account account = new Account(10000L, Account.Currency.valueOf(currency), 100d, clientId);
-        accounts.add(account);
+        Account account = new Account(10000L, Account.Currency.valueOf(currency), 100d, clientId, name);
 
         AtomicReference<List<Transaction>> result = new AtomicReference<>();
 
         assertDoesNotThrow(() ->
-                result.set(transactionService.getTransactions(currency, accounts)));
+                result.set(transactionService.getTransactions(account)));
 
         assertEquals(result.get(), new ArrayList<Transaction>());
     }

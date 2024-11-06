@@ -186,3 +186,246 @@ INFO: Account deleted
 INFO: Import successfully.
 но€б. 05, 2024 6:03:47 PM com.donbank.db.DatabaseConnector closeConnection
 INFO: Database connection closed.
+но€б. 06, 2024 11:37:56 AM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 11:39:11 AM com.donbank.db.DatabaseConnector closeConnection
+INFO: Database connection closed.
+но€б. 06, 2024 11:51:06 AM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 11:51:19 AM com.donbank.repository.AccountRepository updateAccount
+INFO: Account updated successfully
+но€б. 06, 2024 11:51:19 AM com.donbank.repository.TransactionRepository addTransaction
+INFO: Transaction added successfully
+но€б. 06, 2024 11:51:19 AM com.donbank.service.CLIService changeBalanceAccount
+INFO: Amount updated
+{
+"id": 10001,
+"currency": "USD",
+"balance": 1600.0
+}
+но€б. 06, 2024 11:51:34 AM com.donbank.service.CLIService createAccount
+INFO: An account with this currency already exists
+но€б. 06, 2024 12:11:17 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 12:11:48 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 12:11:57 PM com.donbank.service.CLIService createAccount
+INFO: Account created
+но€б. 06, 2024 12:12:13 PM com.donbank.repository.AccountRepository updateAccount
+INFO: Account updated successfully
+но€б. 06, 2024 12:12:13 PM com.donbank.repository.TransactionRepository addTransaction
+INFO: Transaction added successfully
+но€б. 06, 2024 12:12:13 PM com.donbank.service.CLIService changeBalanceAccount
+INFO: Amount updated
+{
+"id": 10098,
+"currency": "RUB",
+"balance": 1000.0
+}
+но€б. 06, 2024 12:16:53 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 12:17:03 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 12:17:33 PM com.donbank.repository.AccountRepository updateAccount
+INFO: Account updated successfully
+но€б. 06, 2024 12:17:33 PM com.donbank.repository.TransactionRepository addTransaction
+INFO: Transaction added successfully
+но€б. 06, 2024 12:17:33 PM com.donbank.service.CLIService changeBalanceAccount
+INFO: Amount updated
+{
+"id": 10001,
+"currency": "USD",
+"balance": 2600.0
+}
+но€б. 06, 2024 12:17:36 PM com.donbank.db.DatabaseConnector closeConnection
+INFO: Database connection closed.
+но€б. 06, 2024 12:48:28 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 12:52:43 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 12:53:26 PM com.donbank.db.DatabaseConnector closeConnection
+INFO: Database connection closed.
+но€б. 06, 2024 12:57:17 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 12:57:26 PM com.donbank.db.DatabaseConnector closeConnection
+INFO: Database connection closed.
+но€б. 06, 2024 12:57:30 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 12:58:12 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 1:04:31 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 1:10:24 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 1:11:38 PM com.donbank.repository.AccountRepository updateAccount
+INFO: Account updated successfully
+но€б. 06, 2024 1:11:38 PM com.donbank.repository.TransactionRepository addTransaction
+INFO: Transaction added successfully
+но€б. 06, 2024 1:11:38 PM com.donbank.service.CLIService changeBalanceAccount
+INFO: Amount updated
+{
+"id": 10098,
+"currency": "RUB",
+"balance": 900.0
+}
+но€б. 06, 2024 1:12:41 PM com.donbank.repository.AccountRepository deleteAccount
+INFO: Account deleted successfully
+но€б. 06, 2024 1:12:41 PM com.donbank.service.CLIService removeAccount
+INFO: Account deleted
+но€б. 06, 2024 1:16:14 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 1:18:35 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 1:18:56 PM com.donbank.service.CLIService createAccount
+INFO: Account created
+но€б. 06, 2024 1:19:46 PM com.donbank.repository.AccountRepository deleteAccount
+INFO: Account deleted successfully
+но€б. 06, 2024 1:19:46 PM com.donbank.service.CLIService removeAccount
+INFO: Account deleted
+но€б. 06, 2024 1:19:50 PM com.donbank.repository.AccountRepository deleteAccount
+INFO: Account deleted successfully
+но€б. 06, 2024 1:19:50 PM com.donbank.service.CLIService removeAccount
+INFO: Account deleted
+но€б. 06, 2024 1:20:03 PM com.donbank.service.CLIService createAccount
+INFO: Account created
+но€б. 06, 2024 1:20:47 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 1:23:56 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 1:27:24 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 1:40:19 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 1:41:44 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 1:42:59 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 1:43:15 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 1:47:17 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 1:48:51 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 1:49:05 PM com.donbank.service.CLIService importCSV
+INFO: Import successfully.
+но€б. 06, 2024 1:51:36 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 1:51:46 PM com.donbank.service.CLIService importCSV
+INFO: Import successfully.
+но€б. 06, 2024 1:54:00 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 1:54:06 PM com.donbank.service.CLIService importCSV
+INFO: Import successfully.
+но€б. 06, 2024 1:54:33 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 1:54:46 PM com.donbank.service.CLIService importCSV
+INFO: Import successfully.
+но€б. 06, 2024 1:56:19 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 1:56:30 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 1:57:07 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 1:57:12 PM com.donbank.service.CLIService importCSV
+INFO: Import successfully.
+но€б. 06, 2024 1:57:32 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 4:47:52 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 4:47:56 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 4:49:24 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 4:50:48 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 4:51:22 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 4:52:20 PM com.donbank.db.DatabaseConnector closeConnection
+INFO: Database connection closed.
+но€б. 06, 2024 4:52:27 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 4:56:34 PM com.donbank.service.CLIService createAccount
+INFO: Account created
+но€б. 06, 2024 4:59:17 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 5:00:24 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 5:00:32 PM com.donbank.service.CLIService createAccount
+INFO: Account created
+но€б. 06, 2024 5:00:44 PM com.donbank.repository.AccountRepository updateAccount
+INFO: Account updated successfully
+но€б. 06, 2024 5:00:44 PM com.donbank.repository.TransactionRepository addTransaction
+INFO: Transaction added successfully
+но€б. 06, 2024 5:00:44 PM com.donbank.service.CLIService changeBalanceAccount
+INFO: Amount updated
+{
+"id": 10177,
+"name": "RUB 1",
+"currency": "RUB",
+"balance": 1000.0
+}
+но€б. 06, 2024 5:00:51 PM com.donbank.service.CLIService createAccount
+INFO: Account created
+но€б. 06, 2024 5:01:02 PM com.donbank.repository.AccountRepository updateAccount
+INFO: Account updated successfully
+но€б. 06, 2024 5:01:02 PM com.donbank.repository.TransactionRepository addTransaction
+INFO: Transaction added successfully
+но€б. 06, 2024 5:01:02 PM com.donbank.service.CLIService changeBalanceAccount
+INFO: Amount updated
+{
+"id": 10178,
+"name": "USD 1",
+"currency": "USD",
+"balance": 100.0
+}
+но€б. 06, 2024 5:01:22 PM com.donbank.service.CLIService getTransactions
+INFO: [{
+"id": 10020,
+"amount": "10020.0",
+"transaction_type": "contribute",
+"created_at": 2024-11-06 17:00:44.0,
+"account": {
+"id": 10177,
+"name": "null",
+"currency": "RUB",
+"balance": 1000.0
+}
+}]
+но€б. 06, 2024 5:17:18 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 5:17:29 PM com.donbank.service.CLIService getTransactions
+INFO: []
+но€б. 06, 2024 5:17:38 PM com.donbank.repository.AccountRepository updateAccount
+INFO: Account updated successfully
+но€б. 06, 2024 5:17:38 PM com.donbank.repository.TransactionRepository addTransaction
+INFO: Transaction added successfully
+но€б. 06, 2024 5:17:38 PM com.donbank.service.CLIService changeBalanceAccount
+INFO: Amount updated
+{
+"id": 10177,
+"name": "RUB 1",
+"currency": "RUB",
+"balance": 1100.0
+}
+но€б. 06, 2024 5:17:44 PM com.donbank.service.CLIService getTransactions
+INFO: []
+но€б. 06, 2024 5:18:27 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 5:46:22 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 5:47:12 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 5:47:30 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 6:02:20 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 6:06:54 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 6:08:16 PM com.donbank.db.DatabaseConnector initializeConnector
+INFO: Connected to the database successfully.
+но€б. 06, 2024 6:08:25 PM com.donbank.service.CLIService createNewUser
+INFO: Create client successfully.
+но€б. 06, 2024 6:09:45 PM com.donbank.repository.ClientRepository deleteClient
+INFO: Deleted client successfully.
+но€б. 06, 2024 6:09:45 PM com.donbank.service.CLIService deleteUser
+INFO: Delete client successfully.

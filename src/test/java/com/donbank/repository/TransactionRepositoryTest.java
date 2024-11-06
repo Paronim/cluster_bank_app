@@ -48,9 +48,9 @@ class TransactionRepositoryTest {
         String transactionType = "withdraw";
         Timestamp createAt = Timestamp.valueOf(LocalDateTime.now());
         createAt.setNanos(0);
-        Account account = accountRepository.addAccount("RUB", 100, 10000);
+        Account account = accountRepository.addAccount("RUB", 100, 10000, "test");
         transactionRepository.addTransaction(amount, transactionType, createAt, account.getId());
-
+        System.out.println(transactionRepository.getAllTransactionByAccountID(account.getId()));
         Transaction transaction = transactionRepository.getAllTransactionByAccountID(account.getId()).getLast();
 
         assertEquals(transaction.getAccount().getId(), account.getId());

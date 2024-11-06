@@ -37,6 +37,7 @@ public class Account implements Serializable {
         this.currency = builder.currency;
         this.balance = builder.balance;
         this.clientId = builder.clientId;
+        this.name = builder.name;
     }
 
     /**
@@ -59,6 +60,7 @@ public class Account implements Serializable {
      */
     private long clientId;
 
+    private String name;
     /**
      * Returns a string representation of the Account object in JSON-like format.
      *
@@ -68,6 +70,7 @@ public class Account implements Serializable {
     public String toString() {
         return "{\n" +
                 "\"id\": " + id + "," +
+                "\n\"name\": \"" + name + "\"," +
                 "\n\"currency\": \"" + currency + "\"," +
                 "\n\"balance\": " + balance +
                 "\n}";
@@ -81,6 +84,7 @@ public class Account implements Serializable {
         private Currency currency;
         private double balance;
         private long clientId;
+        private String name;
 
         public Builder setId(long id) {
             this.id = id;
@@ -99,6 +103,11 @@ public class Account implements Serializable {
 
         public Builder setClientId(long clientId) {
             this.clientId = clientId;
+            return this;
+        }
+
+        public Builder setName(String name) {
+            this.name = name;
             return this;
         }
 
