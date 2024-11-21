@@ -29,7 +29,11 @@ dependencies {
 	implementation 'org.postgresql:postgresql'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
-	
+	implementation 'org.flywaydb:flyway-core'
+	implementation 'org.flywaydb:flyway-database-postgresql'
+
+	testImplementation 'io.zonky.test:embedded-database-spring-test:2.5.1'
+
 	implementation 'javax.cache:cache-api'
 	implementation 'org.ehcache:ehcache'
 

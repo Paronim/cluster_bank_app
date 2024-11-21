@@ -16,14 +16,6 @@ public class ConvertorCurrencyService {
     @Value("${currency.api.url}")
     private String url;
 
-    //URL новой API
-    @Value("${currency.api.url.new")
-    private String urlNew;
-
-    //токен новой API
-    @Value("${currency.api.token}")
-    private String token;
-
     public ConvertorCurrencyService(RestClient restClient) {
         this.restClient = restClient;
     }
@@ -31,15 +23,6 @@ public class ConvertorCurrencyService {
     public double convert(double amount, String from, String to) {
 
         try {
-            //отдает ошибку при запросе base url, который отличается от USD
-//            ResponseEntity<ConvertDTO> responseNew = restClient.get()
-//                    .uri(uriBuilder -> uriBuilder
-//                            .path(urlNew)
-//                            .queryParam("app_id", token)
-//                            .queryParam("base", from)
-//                            .build())
-//                    .retrieve()
-//                    .toEntity(ConvertDTO.class);
 
             ResponseEntity<ConvertDTO> response = restClient.get().uri(url + from).retrieve().toEntity(ConvertDTO.class);
 

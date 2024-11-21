@@ -83,7 +83,7 @@ public class AccountController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PutMapping
-    public ResponseEntity<AccountDTO> updateAccount(
+    public ResponseEntity updateAccount(
             @Parameter(description = "Updated account data", required = true)
             @RequestBody AccountDTO accountDTO) {
         try {
@@ -94,10 +94,10 @@ public class AccountController {
             return ResponseEntity.ok(accountService.updateAccount(accountDTO));
         } catch (EntityNotFoundException e) {
             log.error("Error updating account: ", e);
-            return new ResponseEntity("Error updating account: " + e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Error updating account: " + e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             log.error("Error updating account", e);
-            return new ResponseEntity("Error updating account", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Error updating account", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

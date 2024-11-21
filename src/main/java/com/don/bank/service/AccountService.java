@@ -21,11 +21,9 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final TransactionService transactionService;
 
-    public AccountService(AccountRepository accountRepository,@Lazy TransactionService transactionService) {
+    public AccountService(AccountRepository accountRepository, @Lazy TransactionService transactionService) {
         this.accountRepository = accountRepository;
         this.transactionService = transactionService;
-
-
     }
 
     public List<AccountDTO> getAllAccounts() {
