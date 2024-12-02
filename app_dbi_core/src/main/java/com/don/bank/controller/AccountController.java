@@ -131,7 +131,7 @@ public class AccountController {
             @Parameter(description = "Amount to withdraw", required = true)
             @RequestBody double amount) {
         try {
-            return ResponseEntity.ok(accountService.withdrawBalance(id, amount));
+            return ResponseEntity.ok(accountService.withdrawBalance(id, amount, "transaction"));
         } catch (IllegalArgumentException e) {
             log.error("Error withdrawing balance: ", e);
             return new ResponseEntity("Error withdrawing balance: " + e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -149,7 +149,7 @@ public class AccountController {
             @Parameter(description = "Amount to deposit", required = true)
             @RequestBody double amount) {
         try {
-            return ResponseEntity.ok(accountService.depositBalance(id, amount));
+            return ResponseEntity.ok(accountService.depositBalance(id, amount, "transaction"));
         } catch (IllegalArgumentException e) {
             log.error("Error depositing balance: ", e);
             return new ResponseEntity("Error depositing balance: " + e.getMessage(), HttpStatus.BAD_REQUEST);

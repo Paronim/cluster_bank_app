@@ -119,7 +119,7 @@ class AccountServiceTest {
         when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            accountService.withdrawBalance(1L, 100.0);
+            accountService.withdrawBalance(1L, 100.0, "transaction");
         });
 
         assertEquals("not enough money", exception.getMessage());
@@ -137,7 +137,7 @@ class AccountServiceTest {
         when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
         when(accountRepository.save(any(Account.class))).thenReturn(account);
 
-        AccountDTO result = accountService.depositBalance(1L, 50.0);
+        AccountDTO result = accountService.depositBalance(1L, 50.0, "transaction");
 
         assertEquals(150.0, result.getBalance());
         verify(transactionService, times(1)).createTransaction(any(Transaction.class));

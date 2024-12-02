@@ -129,7 +129,7 @@ class AccountControllerTest {
 
         long accountId = 1L;
         double amount = 100.0;
-        when(accountService.withdrawBalance(accountId, amount)).thenReturn(AccountDTO.builder().id(accountId).balance(1000.0).build());
+        when(accountService.withdrawBalance(accountId, amount, "transaction")).thenReturn(AccountDTO.builder().id(accountId).balance(1000.0).build());
 
         mockMvc.perform(post("/accounts/{id}/withdraw", accountId)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -139,11 +139,11 @@ class AccountControllerTest {
     }
 
     @Test
-    void deposit_ShouldReturnOk_WhenDepositlIsSuccessful() throws Exception {
+    void deposit_ShouldReturnOk_WhenDepositIsSuccessful() throws Exception {
 
         long accountId = 1L;
         double amount = 100.0;
-        when(accountService.depositBalance(accountId, amount)).thenReturn(AccountDTO.builder().id(accountId).balance(1000.0).build());
+        when(accountService.depositBalance(accountId, amount, "transaction")).thenReturn(AccountDTO.builder().id(accountId).balance(1000.0).build());
 
         mockMvc.perform(post("/accounts/{id}/deposit", accountId)
                         .contentType(MediaType.APPLICATION_JSON)

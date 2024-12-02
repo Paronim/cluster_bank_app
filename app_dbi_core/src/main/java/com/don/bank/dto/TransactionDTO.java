@@ -31,6 +31,5 @@ public class TransactionDTO {
 
     @Schema(description = "Account recipient id of the transaction", example = "10000")
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @NotNull(message = "Recipient id is required")
     private Long recipientId;
 }

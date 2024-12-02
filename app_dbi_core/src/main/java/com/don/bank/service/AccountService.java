@@ -14,6 +14,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Service for managing accounts. Provides operations for creating, retrieving, updating,
@@ -180,7 +181,7 @@ public class AccountService {
      * @return the updated account as a DTO
      */
     @Transactional
-    public AccountDTO withdrawBalance(long id, double amount) {
+    public AccountDTO withdrawBalance(long id, double amount, String... type) {
         Account account = getAccountById(id);
 
         if (account == null) {
@@ -193,12 +194,14 @@ public class AccountService {
 
         account.setBalance(account.getBalance() - amount);
 
-        transactionService.createTransaction(Transaction.builder()
-                .amount(amount)
-                .transactionType(Transaction.TransactionType.WITHDRAW)
-                .createdAt(Timestamp.valueOf(LocalDateTime.now()))
-                .account(Account.builder().id(id).build())
-                .build());
+        if(type.length != 0) {
+            transactionService.createTransaction(Transaction.builder()
+                    .amount(amount)
+                    .transactionType(Transaction.TransactionType.WITHDRAW)
+                    .createdAt(Timestamp.valueOf(LocalDateTime.now()))
+                    .account(Account.builder().id(id).build())
+                    .build());
+        }
 
         return MappingUtils.mapToAccountDto(accountRepository.save(account));
     }
@@ -211,7 +214,7 @@ public class AccountService {
      * @return the updated account as a DTO
      */
     @Transactional
-    public AccountDTO depositBalance(long id, double amount) {
+    public AccountDTO depositBalance(long id, double amount, String... type) {
         Account account = getAccountById(id);
 
         if (account == null) {
@@ -220,12 +223,14 @@ public class AccountService {
 
         account.setBalance(account.getBalance() + amount);
 
-        transactionService.createTransaction(Transaction.builder()
-                .amount(amount)
-                .transactionType(Transaction.TransactionType.DEPOSIT)
-                .createdAt(Timestamp.valueOf(LocalDateTime.now()))
-                .account(Account.builder().id(id).build())
-                .build());
+        if(type.length != 0) {
+            transactionService.createTransaction(Transaction.builder()
+                    .amount(amount)
+                    .transactionType(Transaction.TransactionType.DEPOSIT)
+                    .createdAt(Timestamp.valueOf(LocalDateTime.now()))
+                    .account(Account.builder().id(id).build())
+                    .build());
+        }
 
         return MappingUtils.mapToAccountDto(accountRepository.save(account));
     }

@@ -36,7 +36,7 @@ public class TransactionController {
             @Parameter(description = "Sender account ID to filter transactions") @RequestParam(value = "sid", required = false) Long senderId,
             @Parameter(description = "Recipient account ID to filter transactions") @RequestParam(value = "rid", required = false) Long receiverId) {
         try {
-            if (senderId != null && receiverId != null) {
+            if (senderId != null) {
                 return ResponseEntity.ok(transactionService.getTransactionsBySenderAndRecipientId(senderId, receiverId));
             }
             return ResponseEntity.ok(transactionService.getAllTransactions());
@@ -84,6 +84,25 @@ public class TransactionController {
         } catch (IllegalArgumentException e) {
             log.error(e.getMessage());
             return new ResponseEntity("Error transferring money: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseEntity("Error transferring money: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Operation(
+            summary = "Transfer all transactions",
+            description = "Initiates a transfer all transactions in service working with elasticsearch"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "All transactions transferred successfully"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @PostMapping("/transfer/all/elasticsearch")
+    public ResponseEntity transferAllElasticsearch() {
+        try {
+            transactionService.transferTransactionFromElasticsearch();
+            return ResponseEntity.ok("All transactions transferred successfully");
         } catch (Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity("Error transferring money: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

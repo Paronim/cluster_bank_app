@@ -30,6 +30,9 @@ class TransactionServiceTest {
     @Mock
     private AccountService accountService;
 
+    @Mock
+    private ProducerService producerService;
+
     @InjectMocks
     private TransactionService transactionService;
 
@@ -41,19 +44,22 @@ class TransactionServiceTest {
 
         Account recipientAccount = Account.builder().id(2L).balance(0d).currency(Account.Currency.USD).build();
 
-        Transaction transaction = Transaction.builder().amount(100d).account(senderAccount).recipient(recipientAccount).build();
+        Transaction transaction = Transaction.builder().amount(100d).transactionType(Transaction.TransactionType.TRANSFER).account(senderAccount).recipient(recipientAccount).build();
 
         when(accountService.withdrawBalance(1L, 100.0)).thenReturn(AccountDTO.builder().build());
         when(accountService.getAccountById(1L)).thenReturn(senderAccount);
         when(accountService.getAccountById(2L)).thenReturn(recipientAccount);
         when(convertorCurrencyService.convert(100.0, "RUB", "USD")).thenReturn(1.5); // Simulating currency conversion
         when(accountService.depositBalance(2L, 1.5d)).thenReturn(AccountDTO.builder().build());
+        doNothing().when(producerService).send(MappingUtils.mapToTransactionDto(transaction));
+        when(transactionRepository.save(transaction)).thenReturn(transaction);
 
         transactionService.transferMoney(transactionDTO);
 
         verify(accountService, times(1)).withdrawBalance(1L, 100d);
         verify(accountService, times(1)).depositBalance(2L, 1.5d);
         verify(transactionRepository, times(1)).save(transaction);
+        verify(producerService, times(1)).send(transactionDTO);
     }
 
     @Test

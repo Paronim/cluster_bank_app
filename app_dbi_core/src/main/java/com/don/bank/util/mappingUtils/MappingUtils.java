@@ -89,7 +89,7 @@ public class MappingUtils {
                 .createdAt(transactionDTO.getCreatedAt())
                 .transactionType(Transaction.TransactionType.valueOf(transactionDTO.getTransactionType()))
                 .account(Account.builder().id(transactionDTO.getAccountId()).build())
-                .recipient(Account.builder().id(transactionDTO.getRecipientId()).build())
+                .recipient(transactionDTO.getRecipientId() != null ? Account.builder().id(transactionDTO.getRecipientId()).build() : null)
                 .build();
 
     }
