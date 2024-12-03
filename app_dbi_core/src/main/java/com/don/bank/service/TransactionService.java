@@ -17,6 +17,7 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -67,8 +68,9 @@ public class TransactionService {
      * @throws HttpClientErrorException if the service call fails
      */
     public List<TransactionDTO> getAllTransactions() {
+        URI uri = URI.create(receiptUrl + "/all");
         ResponseEntity<List<TransactionDTO>> response = restClient.get()
-                .uri(receiptUrl  + "/" + "all")
+                .uri(uri)
                 .retrieve()
                 .toEntity(new ParameterizedTypeReference<List<TransactionDTO>>() {});
 
@@ -87,8 +89,9 @@ public class TransactionService {
      * @throws HttpClientErrorException if the service call fails
      */
     public TransactionDTO getTransactionById(Long id) {
+        URI uri = URI.create(receiptUrl + "/" + id);
         ResponseEntity<TransactionDTO> response = restClient.get()
-                .uri(receiptUrl + "/" + id)
+                .uri(uri)
                 .retrieve()
                 .toEntity(TransactionDTO.class);
 

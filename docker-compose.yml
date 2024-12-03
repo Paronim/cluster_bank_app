@@ -47,7 +47,7 @@ services:
     volumes:
       - ./es_data:/usr/share/elasticsearch/data
 
-  app_dbi_core:
+  app-dbi-core:
     build:
       context: app_dbi_core
       dockerfile: Dockerfile
@@ -58,7 +58,7 @@ services:
       SPRING_RABBITMQ_HOST: rabbitmq
       SPRING_RABBITMQ_USERNAME: root
       SPRING_RABBITMQ_PASSWORD: root
-      TRANSACTIONS_SERVICE_API_URL: app_dbi_transactions
+      TRANSACTIONS_SERVICE_API_URL: http://app-dbi-transactions:8081/receipt
     depends_on:
       - db
       - rabbitmq
@@ -67,16 +67,21 @@ services:
     networks:
       - app_dbi
 
-  app_dbi_transactions:
+  app-dbi-transactions:
     build:
       context: app_dbi_transactions
       dockerfile: Dockerfile
     environment:
-      SPRING_ELASTICSEARCH_URI: elasticsearch
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_USERNAME: root
+      SPRING_RABBITMQ_PASSWORD: root
+      SPRING_ELASTICSEARCH_SOCKET_TIMEOUT: 20s
+      SPRING_ELASTICSEARCH_RESTCLIENT_SNIFFER_DELAY_AFTER_FAILURE: 30s
+      SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200
       SPRING_ELASTICSEARCH_USERNAME: elastic
       SPRING_ELASTICSEARCH_PASSWORD: root
     depends_on:
-      - app_dbi_core
+      - app-dbi-core
       - rabbitmq
       - elasticsearch
     ports:
