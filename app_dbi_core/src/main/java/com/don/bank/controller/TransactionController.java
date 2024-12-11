@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/transactions")
 public class TransactionController {
@@ -42,7 +44,7 @@ public class TransactionController {
             return ResponseEntity.ok(transactionService.getAllTransactions());
         } catch (Exception e) {
             log.error(e.getMessage());
-            return new ResponseEntity("Error retrieving transactions: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().body(Map.of("message","Error retrieving transactions: " + e.getMessage()));
         }
     }
 
@@ -62,7 +64,7 @@ public class TransactionController {
             return ResponseEntity.ok(transactionService.getTransactionById(id));
         } catch (Exception e) {
             log.error(e.getMessage());
-            return new ResponseEntity("Error retrieving transaction by ID: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().body(Map.of("message","Error retrieving transaction by ID: " + e.getMessage()));
         }
     }
 
@@ -80,13 +82,13 @@ public class TransactionController {
             @Parameter(description = "Transaction details for the money transfer", required = true) @RequestBody TransactionDTO transactionDTO) {
         try {
             transactionService.transferMoney(transactionDTO);
-            return ResponseEntity.ok("Money transferred successfully");
+            return ResponseEntity.ok(Map.of("message","Money transferred successfully"));
         } catch (IllegalArgumentException e) {
             log.error(e.getMessage());
-            return new ResponseEntity("Error transferring money: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(Map.of("message","Error transferring money: " + e.getMessage()));
         } catch (Exception e) {
             log.error(e.getMessage());
-            return new ResponseEntity("Error transferring money: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().body(Map.of("message","Error transferring money: " + e.getMessage()));
         }
     }
 
@@ -105,7 +107,7 @@ public class TransactionController {
             return ResponseEntity.ok("All transactions transferred successfully");
         } catch (Exception e) {
             log.error(e.getMessage());
-            return new ResponseEntity("Error transferring money: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().body(Map.of("message","Error transferring money: " + e.getMessage()));
         }
     }
 }

@@ -1,11 +1,14 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="tag" %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/UI"%>
+<%@ taglib prefix="component" tagdir="/WEB-INF/tags/components"%>
+
+<!DOCTYPE html>
 <html>
-<head>
-    <title>Spring JSP Example</title>
-</head>
+<tag:header title="DBI" />
 <body>
-<h1>${message}</h1>
-<p>This is a JSP page rendered by Spring MVC.</p>
+    <component:client />
+    <component:accounts currencies="${currencies}"/>
+    <component:transaction />
 </body>
 </html>

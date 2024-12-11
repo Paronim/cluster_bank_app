@@ -1,6 +1,5 @@
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/UI" %>
-<%@ attribute name="currensies" required="true" type="java.util.List" %>
-<%@ attribute name="types" required="true" type="java.util.List" %>
+<%@ attribute name="currencies" required="true" type="java.util.List" %>
 
 <section class="accounts">
     <div class="accounts-wrapper">
@@ -20,5 +19,16 @@
         </div>
 
     </div>
+
+    <ui:popup id="create">
+        <form id="create-account" method="POST" action="/accounts">
+            <h2>Create account</h2>
+            <ui:input name="clientId" type="hidden"/>
+            <ui:input label="Name" name="name" type="text"/>
+            <ui:select options="${currencies}" label="Currens" name="currency"/>
+            <ui:error/>
+            <ui:button title="Submit" type="submit"/>
+        </form>
+    </ui:popup>
 
 </section>

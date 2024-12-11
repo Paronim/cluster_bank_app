@@ -1,0 +1,16 @@
+
+.accounts-info .accounts-element {
+    padding: 10px;
+    border-bottom: 1px #021464 solid;
+    border-radius: 10px;
+    text-decoration: none;
+    display: flex;
+}
+
+.accounts-info .accounts-element:hover{
+    background-color: #d0d5e7;
+}
+
+.accounts-control{
+    margin-top: 10px;
+}

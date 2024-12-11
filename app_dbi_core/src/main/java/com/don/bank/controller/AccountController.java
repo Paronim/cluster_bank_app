@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @Controller
 @RequestMapping("/accounts")
 public class AccountController {
@@ -44,7 +46,28 @@ public class AccountController {
             return ResponseEntity.ok(accountService.getAccountsByClientId(clientId));
         } catch (Exception e) {
             log.error("Error getting accounts", e);
-            return new ResponseEntity("Error getting accounts", HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.badRequest().body(Map.of(
+                    "message", "Error getting accounts"));
+        }
+    }
+
+    @Operation(summary = "Retrieve a account by ID", description = "Fetches a account by their unique identifier.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved account"),
+            @ApiResponse(responseCode = "404", description = "Client not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity getAccountById(@Parameter(description = "Unique identifier of the account", required = true) @PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(accountService.getAccountDTOById(id));
+        } catch (EntityNotFoundException e) {
+            log.warn("Account not found: {}", id);
+            return new ResponseEntity<>(Map.of("message", e.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            log.error("Error getting accounts", e);
+            return ResponseEntity.badRequest().body(Map.of(
+                    "message", "Error getting account"));
         }
     }
 
@@ -61,7 +84,8 @@ public class AccountController {
             @RequestBody AccountDTO accountDTO) {
         if (accountDTO.getClientId() == 0) {
             log.warn("Client id is required");
-            return new ResponseEntity("Client id is required", HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(Map.of(
+                    "message","Client id is required"));
         }
 
         try {
@@ -69,10 +93,11 @@ public class AccountController {
             return ResponseEntity.ok(accountService.createAccount(accountDTO));
         } catch (EntityNotFoundException e) {
             log.warn("Client not found: {}", accountDTO.getClientId());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(Map.of("message", e.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             log.error("Error creating account", e);
-            return new ResponseEntity("Error creating account", HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().body(Map.of(
+                    "message", "Error creating account"));
         }
     }
 
@@ -94,10 +119,11 @@ public class AccountController {
             return ResponseEntity.ok(accountService.updateAccount(accountDTO));
         } catch (EntityNotFoundException e) {
             log.error("Error updating account: ", e);
-            return new ResponseEntity<>("Error updating account: " + e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(Map.of("message","Error updating account: " + e.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             log.error("Error updating account", e);
-            return new ResponseEntity<>("Error updating account", HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().body(Map.of(
+                    "message", "Error updating account"));
         }
     }
 
@@ -113,13 +139,14 @@ public class AccountController {
             @PathVariable Long id) {
         try {
             accountService.deleteAccount(id);
-            return ResponseEntity.ok("Account deleted " + id);
+            return ResponseEntity.ok(Map.of("message", "Account deleted " + id));
         } catch (IllegalArgumentException e) {
             log.error("Error deleting account: ", e);
-            return new ResponseEntity("Error deleting account: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(Map.of("message", "Error deleting account: " + e.getMessage()));
         } catch (Exception e) {
             log.error("Error deleting account: ", e);
-            return new ResponseEntity("Error deleting account", HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().body(Map.of(
+                    "message", "Error deleting account"));
         }
     }
 
@@ -129,15 +156,16 @@ public class AccountController {
             @Parameter(description = "ID of the account", required = true)
             @PathVariable Long id,
             @Parameter(description = "Amount to withdraw", required = true)
-            @RequestBody double amount) {
+            @RequestBody Map<String, Double> withdraw) {
         try {
-            return ResponseEntity.ok(accountService.withdrawBalance(id, amount, "transaction"));
+            return ResponseEntity.ok(accountService.withdrawBalance(id, withdraw.get("amount"), "transaction"));
         } catch (IllegalArgumentException e) {
             log.error("Error withdrawing balance: ", e);
-            return new ResponseEntity("Error withdrawing balance: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(Map.of("message", "Error withdrawing balance: " + e.getMessage()));
         } catch (Exception e) {
             log.error("Error withdrawing balance: ", e);
-            return new ResponseEntity("Error withdrawing balance", HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().body(Map.of(
+                    "message", "Error withdrawing balance"));
         }
     }
 
@@ -147,15 +175,16 @@ public class AccountController {
             @Parameter(description = "ID of the account", required = true)
             @PathVariable Long id,
             @Parameter(description = "Amount to deposit", required = true)
-            @RequestBody double amount) {
+            @RequestBody Map<String, Double> deposit) {
         try {
-            return ResponseEntity.ok(accountService.depositBalance(id, amount, "transaction"));
+            return ResponseEntity.ok(accountService.depositBalance(id, deposit.get("amount"), "transaction"));
         } catch (IllegalArgumentException e) {
             log.error("Error depositing balance: ", e);
-            return new ResponseEntity("Error depositing balance: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(Map.of("message", "Error depositing balance: " + e.getMessage()));
         } catch (Exception e) {
             log.error("Error depositing balance: ", e);
-            return new ResponseEntity("Error depositing balance", HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().body(Map.of(
+                    "message", "Error depositing balance"));
         }
     }
 }

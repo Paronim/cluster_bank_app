@@ -1,5 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Jaro:opsz@6..72&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Jaro:opsz@6..72&display=swap');
 * {
-    margin: 0 auto;
+    margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
@@ -9,7 +11,64 @@
     margin: auto;
 }
 
+header {
+    border: 2px solid #021464;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
 .header-wrapper {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    padding: 20px 20px;
+}
+
+h2 {
+    color: #021464;
+    margin-bottom: 10px;
+    font-family: "Inter", sans-serif;
+}
+
+label {
+    color: #021464;
+    font-family: "Inter", sans-serif;
+}
+
+section {
+    border: 2px solid #021464;
+    border-radius: 10px;
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+p {
+    color: #021464;
+    font-family: "Inter", sans-serif;
+}
+
+.none {
+    display: none;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+.material-symbols-outlined{
+    color: brown;
+}
+
+h1 {
+    color: #021464;
+    font-family: "Inter", sans-serif;
+}
+
+.logo a{
+    text-decoration: none;
+    color: #021464;
+
+    font-family: "Jaro", sans-serif;
+    font-size: 40px;
 }

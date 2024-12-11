@@ -6,6 +6,7 @@ import com.don.bank.entity.Client;
 import com.don.bank.entity.Transaction;
 import com.don.bank.repository.AccountRepository;
 import com.don.bank.util.mappingUtils.MappingUtils;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,6 +81,21 @@ public class AccountService {
         return accountRepository.findById(id).orElse(null);
     }
 
+    /**
+     * Retrieves an account by its ID.
+     *
+     * @param id the account ID
+     * @return the account dto entity, or null if not found
+     */
+    public AccountDTO getAccountDTOById(long id) {
+        Account account = accountRepository.findById(id).orElse(null);
+
+        if (account == null) {
+            throw new EntityNotFoundException("Account with id " + id + " not found");
+        }
+
+        return MappingUtils.mapToAccountDto(account);
+    }
     /**
      * Creates a new account.
      *

@@ -83,11 +83,10 @@ public class ClientService {
      * @return the updated client as a DTO
      */
     public ClientDTO updateClient(ClientDTO clientDTO) {
-        // Map DTO to entity and save the client
+
         Client client = MappingUtils.mapToClient(clientDTO);
         clientRepository.save(client);
 
-        // Retrieve and map the updated client entity to DTO
         Client updatedClient = clientRepository.findById(client.getId()).orElse(null);
         return MappingUtils.mapToClientDto(updatedClient);
     }

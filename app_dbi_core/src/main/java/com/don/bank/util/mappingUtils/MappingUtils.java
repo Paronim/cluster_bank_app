@@ -36,6 +36,7 @@ public class MappingUtils {
     public static Client mapToClient (ClientDTO clientDTO) {
 
         return Client.builder()
+                .id(clientDTO.getId())
                 .firstName(clientDTO.getFirstName())
                 .lastName(clientDTO.getLastName())
                 .build();

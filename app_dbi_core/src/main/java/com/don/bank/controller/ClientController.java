@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/clients")
 public class ClientController {
@@ -41,10 +43,10 @@ public class ClientController {
             return ResponseEntity.ok(client);
         } catch (EntityNotFoundException e) {
             log.warn("Client not found: {}", id);
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(Map.of("message", e.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             log.error(e.getMessage());
-            return new ResponseEntity<>("Error while getting client by id", HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().body(Map.of("message", "Error while getting client by id"));
         }
     }
 
@@ -62,10 +64,10 @@ public class ClientController {
             return ResponseEntity.ok(client.getAccounts());
         } catch (EntityNotFoundException e) {
             log.warn("Client not found: {}", id);
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(Map.of("message", e.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             log.error(e.getMessage());
-            return new ResponseEntity<>("Error while getting client accounts", HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().body(Map.of("message","Error while getting client accounts"));
         }
     }
 
@@ -82,7 +84,7 @@ public class ClientController {
             return new ResponseEntity<>(newClient, HttpStatus.CREATED);
         } catch (Exception e) {
             log.error(e.getMessage());
-            return new ResponseEntity<>("Error while adding client", HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().body(Map.of("message","Error while adding client"));
         }
     }
 
@@ -101,10 +103,10 @@ public class ClientController {
             return ResponseEntity.ok(newClient);
         } catch (EntityNotFoundException e) {
             log.warn("Client not found: {}", clientDTO.getId());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(Map.of("message", e.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             log.error(e.getMessage());
-            return new ResponseEntity<>("Error while updating client", HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().body(Map.of("message","Error while updating client"));
         }
     }
 
@@ -115,18 +117,18 @@ public class ClientController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteClient(
+    public ResponseEntity deleteClient(
             @Parameter(description = "Unique identifier of the client to delete", required = true) @PathVariable Long id) {
         try {
             clientService.getById(id);
             clientService.deleteClient(id);
-            return ResponseEntity.ok("Deleted client successfully: " + id);
+            return ResponseEntity.ok(Map.of("message","Deleted client successfully: " + id));
         } catch (EntityNotFoundException e) {
             log.warn("Client not found: {}", id);
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(Map.of("message", e.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             log.error(e.getMessage());
-            return new ResponseEntity<>("Error while deleting client", HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().body(Map.of("message","Error while deleting client"));
         }
     }
 }

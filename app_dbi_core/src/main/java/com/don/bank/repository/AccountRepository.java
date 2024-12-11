@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Long> {
 
-    @Query("FROM Account a WHERE a.client.id = :client_id")
+    @Query("FROM Account a WHERE a.client.id = :client_id ORDER BY a.id ASC")
     List<Account> findByClientId(@Param("client_id") long clientId);
 
 }
