@@ -25,6 +25,11 @@ public class ClientDTO {
     @Pattern(regexp = "^[A-Z].*", message = "Client first name must start with an uppercase letter")
     private String lastName;
 
+    @Schema(description = "Phone of the client", example = "79001001010")
+    @NotNull(message = "Phone is required")
+    @Pattern(regexp = "^7\\d{10}$", message = "Client number phone not valid")
+    private long phone;
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<Long> accounts;
 }

@@ -31,6 +31,10 @@ public class Client implements Serializable {
     @Column(name = "last_name")
     private String lastName;
 
+    private long phone;
+
+    private String password;
+
     @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
     private List<Account> accounts;
 

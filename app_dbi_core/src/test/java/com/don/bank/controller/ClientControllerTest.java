@@ -79,33 +79,6 @@ class ClientControllerTest {
     }
 
     @Test
-    void addClient_ShouldReturnCreated_WhenClientIsAdded() throws Exception {
-
-        ClientDTO clientDTO = ClientDTO.builder().id(1L).firstName("Client").lastName("Name").build();
-        when(clientService.addClient(clientDTO)).thenReturn(clientDTO);
-
-        mockMvc.perform(post("/clients")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"id\": 1, \"firstName\": \"Client\", \"lastName\": \"Name\"}"))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.firstName").value("Client"));
-    }
-
-    @Test
-    void addClient_ShouldReturnInternalServerError_WhenErrorOccurs() throws Exception {
-
-        ClientDTO clientDTO = ClientDTO.builder().id(1L).firstName("Client").lastName("Name").build();
-        when(clientService.addClient(clientDTO)).thenThrow(new RuntimeException("Internal error"));
-
-        mockMvc.perform(post("/clients")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"id\": 1, \"firstName\": \"Client\", \"lastName\": \"Name\"}"))
-                .andExpect(status().isInternalServerError())
-                .andExpect(content().string("Error while adding client"));
-    }
-
-    @Test
     void updateClient_ShouldReturnUpdatedClient_WhenClientExists() throws Exception {
 
         long clientId = 1L;

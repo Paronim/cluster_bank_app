@@ -71,23 +71,6 @@ public class ClientController {
         }
     }
 
-    @Operation(summary = "Add a new client", description = "Creates a new client with the provided details.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Successfully created client"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    @PostMapping
-    public ResponseEntity addClient(
-            @Parameter(description = "Client data to be created", required = true) @RequestBody @Validated ClientDTO clientDTO) {
-        try {
-            ClientDTO newClient = clientService.addClient(clientDTO);
-            return new ResponseEntity<>(newClient, HttpStatus.CREATED);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return ResponseEntity.internalServerError().body(Map.of("message","Error while adding client"));
-        }
-    }
-
     @Operation(summary = "Update a client", description = "Updates an existing client's details.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successfully updated client"),

@@ -1,6 +1,7 @@
 package com.don.bank.service;
 
 import com.don.bank.dto.ClientDTO;
+import com.don.bank.dto.RegisterClientDTO;
 import com.don.bank.entity.Account;
 import com.don.bank.entity.Client;
 import com.don.bank.repository.ClientRepository;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Service for managing clients. Provides operations for creating, retrieving, updating,
@@ -60,20 +62,16 @@ public class ClientService {
      * @return the newly added client as a DTO
      */
     @Transactional
-    public ClientDTO addClient(ClientDTO clientDTO) {
-        // Map DTO to entity and save the client
+    public void addClient(RegisterClientDTO clientDTO) {
+
         Client client = MappingUtils.mapToClient(clientDTO);
         Client newClient = clientRepository.save(client);
 
-        // Create default accounts for the client
         List<Account> accounts = new ArrayList<>();
         accounts.add(accountService.createAccount("RUB", 0d, "RUB", "main", newClient));
         accounts.add(accountService.createAccount("USD", 0d, "USD", "secondary", newClient));
 
-        // Associate accounts with the client
         newClient.setAccounts(accounts);
-
-        return MappingUtils.mapToClientDto(newClient);
     }
 
     /**
@@ -98,6 +96,12 @@ public class ClientService {
      */
     public void deleteClient(long id) {
         clientRepository.deleteById(id);
+    }
+
+    public boolean existsByPhone(long phone){
+        Optional<Client> client = clientRepository.findClientByPhone(phone);
+
+        return client.isEmpty();
     }
 }
 
