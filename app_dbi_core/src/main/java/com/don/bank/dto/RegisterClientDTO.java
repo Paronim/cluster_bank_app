@@ -30,10 +30,10 @@ public class RegisterClientDTO {
 
     @Schema(description = "Password of the client", example = "Password123!")
     @NotNull(message = "Password is required")
-//    @Pattern(regexp = "^.{8,}$", message = "The password must be at least 8 characters")
-//    @Pattern(regexp = "(?=.*[A-Z])", message = "The password must have at least one uppercase letter")
-//    @Pattern(regexp = "(?=.*[0-9])", message = "The password must have at least one number")
-//    @Pattern(regexp = "(?=.*[@$!%*?&.\\-_])", message = "The password must have at least one special character (@$!%*?&.-_)")
-//    @Pattern(regexp = "^[A-Za-z\\d@$!%*?&.\\-_]+$", message = "The password contains invalid characters")
+    @Pattern(regexp = "^.{8,}$", message = "The password must be at least 8 characters")
+    @Pattern(regexp = "^(?=.*[A-Z]).*$", message = "The password must have at least one uppercase letter")
+    @Pattern(regexp = "^(?=.*[0-9]).*$", message = "The password must have at least one number")
+    @Pattern(regexp = "^(?=.*[@$!%*?&.\\-_]).*$", message = "The password must have at least one special character (@$!%*?&.-_)")
+    @Pattern(regexp = "^[A-Za-z\\d@$!%*?&.\\-_]+$", message = "The password contains invalid characters")
     private String password;
 }

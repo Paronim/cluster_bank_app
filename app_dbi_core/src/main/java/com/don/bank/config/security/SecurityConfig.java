@@ -1,9 +1,8 @@
 package com.don.bank.config.security;
 
-import com.don.bank.controller.ClientController;
-import com.don.bank.repository.ClientRepository;
 import com.don.bank.util.JWT.JwtAuthenticationFilter;
 import com.don.bank.util.JWT.JwtUtils;
+import jakarta.servlet.http.Cookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
     private final JwtUtils jwtUtil;
     private final CustomUserDetailsService customUserDetailsService;
 
@@ -59,10 +59,24 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable
                 )
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/auth/register", "/auth/sign-up", "/auth/login", "/error").permitAll()
+                        .requestMatchers("/auth/register",
+                                "/auth/login",
+                                "/login",
+                                "/register",
+                                "/WEB-INF/views/login.jsp",
+                                "/WEB-INF/views/error.jsp",
+                                "/WEB-INF/views/register.jsp",
+                                "/js/**",
+                                "/css/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(e -> e.authenticationEntryPoint((request, response, authException) -> {
+
+                    log.error(authException.getMessage(), authException);
+
+                    response.sendRedirect("/login");
+                }))
+                .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.NEVER))
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtil, customUserDetailsService), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

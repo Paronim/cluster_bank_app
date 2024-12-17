@@ -1,6 +1,7 @@
 <%@ attribute name="title" required="true" %>
 <%@ attribute name="page" required="false" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/UI" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <head>
     <title>DBI app</title>
@@ -26,14 +27,16 @@
 <header>
     <div class="header-wrapper">
         <p class="logo"><a href="/">${title}</a></p>
-
-        <ui:button title="${page == 'auth'?
-        'Register' :
-        'Sign Out'
-        }" type="button" classList="${page == 'auth' ?
-        'auth-button' :
-        'main-button'
-        }"/>
-
+        <c:choose>
+            <c:when test="${page == 'login'}">
+                <a href="/register" id="Register" class="control-link">Register</a>
+            </c:when>
+            <c:when test="${page == 'register'}">
+                <a href="/login" id="Sign up" class="control-link">Sign up</a>
+            </c:when>
+            <c:otherwise>
+                <a href="/auth/logout" id="Logout" class="control-link">Logout</a>
+            </c:otherwise>
+        </c:choose>
     </div>
 </header>

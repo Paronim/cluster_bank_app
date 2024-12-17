@@ -65,6 +65,20 @@ h1 {
     font-family: "Inter", sans-serif;
 }
 
+.header-wrapper > a {
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    background-color: #021464;
+    color: white;
+    cursor: pointer;
+
+    font-family: "Inter", sans-serif;
+    font-size: 0.8em;
+
+    text-decoration: none;
+}
+
 .logo a{
     text-decoration: none;
     color: #021464;
@@ -72,3 +86,4 @@ h1 {
     font-family: "Jaro", sans-serif;
     font-size: 40px;
 }
+

@@ -60,9 +60,8 @@ class ClientServiceTest {
         when(clientRepository.findById(client.getId())).thenReturn(Optional.of(client));
         when(MappingUtils.mapToClientDto(client)).thenReturn(clientDTO);
 
-        ClientDTO actualDto = clientService.updateClient(clientDTO);
+        clientService.updateClient(clientDTO);
 
-        assertEquals(clientDTO, actualDto);
         verify(clientRepository, times(1)).save(client);
         verify(clientRepository, times(1)).findById(client.getId());
     }

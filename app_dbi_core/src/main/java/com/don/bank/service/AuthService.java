@@ -3,6 +3,7 @@ package com.don.bank.service;
 import com.don.bank.config.security.CustomUserDetails;
 import com.don.bank.dto.LoginClientDTO;
 import com.don.bank.dto.RegisterClientDTO;
+import com.don.bank.entity.Client;
 import com.don.bank.util.JWT.JwtUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -10,6 +11,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 public class AuthService {
@@ -39,9 +42,11 @@ public class AuthService {
         clientService.addClient(registerClientDTO);
     }
 
-    public String login (LoginClientDTO loginClientDTO){
+    public Map<String, Object> login (LoginClientDTO loginClientDTO){
 
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginClientDTO.getPhone(), loginClientDTO.getPassword());
+        Client client = clientService.getByPhone(Long.parseLong(loginClientDTO.getPhone())).orElseGet(null);
+
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(client.getId(), loginClientDTO.getPassword());
 
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
@@ -49,6 +54,6 @@ public class AuthService {
 
         CustomUserDetails userData = (CustomUserDetails) authentication.getPrincipal();
 
-        return jwtUtils.generateToken(userData.getUsername());
+        return Map.of("token", jwtUtils.generateToken(userData.getUsername()), "id", client.getId());
     }
 }

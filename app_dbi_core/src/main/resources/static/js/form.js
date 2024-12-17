@@ -5,6 +5,8 @@ const observable = new Observable();
 
 document.addEventListener("DOMContentLoaded", () => {
 
+    phoneMask()
+
     let forms = document.querySelectorAll("form");
 
     forms.forEach(form => {
@@ -12,25 +14,43 @@ document.addEventListener("DOMContentLoaded", () => {
             event.preventDefault();
 
             let formData = new FormData(form);
+            let phone = formData.get("phone");
+            if(phone){
+                formData.set('phone', phone.replace(/\D/g, ""))
+            }
 
+            formData.forEach(el => {
+                console.log(el);
+            })
+
+            const submitButton = form.querySelector("button[type='submit']");
             const error = form.querySelector(".error-wrapper");
+
+            submitButton.disabled = true;
 
             fetchData(form.getAttribute("method"), form.getAttribute("action"), formData).then(
                 response => {
+
                     observable.notify(form.getAttribute("id"))
-                    if (form.getAttribute("id") === "auth" || form.getAttribute("id") === "reg") {
-                        saveClient(response.id)
-                        window.location.href = "/";
+                    if (form.getAttribute("id") === "auth") {
+                        saveInfo(response.id)
                     }
                     error.setAttribute("style", "display: none")
                     error.innerHTML = ""
 
+                    if(response.redirect){
+                        window.location.href = response.redirect
+                    }
+
+                    submitButton.disabled = false;
                 }
             ).catch(e => {
+                submitButton.disabled = false;
+
                 error.setAttribute("style", "display: block")
                 error.innerHTML = `<p class='error'>${e.message}</p>`
 
-                if(e.details){
+                if (e.details) {
                     e.details.forEach(detail => {
                         error.insertAdjacentHTML("beforeend", `<p class='error'>${detail}</p>`);
                     });
@@ -41,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
 })
 
-function saveClient(clientId) {
+function saveInfo(clientId) {
     localStorage.setItem("clientId", clientId);
 }
 
@@ -65,7 +85,8 @@ async function fetchData(method, action, data) {
         let response;
         if (method === "GET" || method === "DELETE") {
             response = await fetch(url, {
-                method: method
+                method: method,
+                redirect: "manual"
             })
         } else {
             response = await fetch(url, {
@@ -73,6 +94,7 @@ async function fetchData(method, action, data) {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                redirect: "manual",
                 body: JSON.stringify(Object.fromEntries(data))
             })
         }
@@ -92,6 +114,33 @@ async function fetchData(method, action, data) {
 
 }
 
-export function subscribe(key, callback){
+function phoneMask() {
+    const phoneInputs = document.querySelectorAll('[name="phone"]');
+
+    phoneInputs.forEach(phoneInput => {
+
+        phoneInput.addEventListener("input", (e) => {
+            let input = e.target.value.replace(/\D/g, "");
+            let formattedInput = "+7";
+
+            if (input.length > 1) {
+                formattedInput += ` (${input.substring(1, 4)}`;
+            }
+            if (input.length >= 5) {
+                formattedInput += `) ${input.substring(4, 7)}`;
+            }
+            if (input.length >= 8) {
+                formattedInput += `-${input.substring(7, 9)}`;
+            }
+            if (input.length >= 10) {
+                formattedInput += `-${input.substring(9, 11)}`;
+            }
+
+            e.target.value = formattedInput;
+        });
+    })
+}
+
+export function subscribe(key, callback) {
     observable.subscribe(key, callback)
 }

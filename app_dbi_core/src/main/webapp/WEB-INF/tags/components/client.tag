@@ -21,11 +21,12 @@
     </div>
 
     <ui:popup id="update">
-        <form id="update-client" method="PUT" action="/clients">
+        <form id="update-client" method="PATCH" action="/clients">
 
             <h2>Update client information</h2>
 
             <ui:input name="id" type="hidden"/>
+            <ui:input label="Phone" name="phone" type="tel" placeholder="+7 (___) ___-__-__" maxlength="18"/>
             <ui:input label="First name" name="firstName" type="text"/>
             <ui:input label="Last name" name="lastName" type="text"/>
             <ui:error/>

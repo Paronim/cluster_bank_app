@@ -80,13 +80,11 @@ public class ClientService {
      * @param clientDTO the updated client details
      * @return the updated client as a DTO
      */
-    public ClientDTO updateClient(ClientDTO clientDTO) {
+    public void updateClient(ClientDTO clientDTO) {
 
         Client client = MappingUtils.mapToClient(clientDTO);
-        clientRepository.save(client);
+        clientRepository.updateClient(client);
 
-        Client updatedClient = clientRepository.findById(client.getId()).orElse(null);
-        return MappingUtils.mapToClientDto(updatedClient);
     }
 
     /**
@@ -102,6 +100,16 @@ public class ClientService {
         Optional<Client> client = clientRepository.findClientByPhone(phone);
 
         return client.isEmpty();
+    }
+
+    public Optional<Client> getByPhone(long phone){
+
+        return clientRepository.findClientByPhone(phone);
+    }
+
+    public Optional<Client> getEntityById(long id){
+
+        return clientRepository.findById(id);
     }
 }
 

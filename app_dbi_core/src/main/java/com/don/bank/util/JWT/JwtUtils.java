@@ -1,8 +1,5 @@
 package com.don.bank.util.JWT;
-import com.don.bank.config.security.CustomUserDetails;
-import com.don.bank.controller.ClientController;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.security.Keys;
 
@@ -10,7 +7,6 @@ import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
 
-import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,13 +49,8 @@ public class JwtUtils {
     }
 
     private Claims extractClaims(String token) {
-        try {
             Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
             log.info("Extracted Claims: " + claims);
             return claims;
-        } catch (SignatureException e) {
-            log.error("Error parsing token: " + e.getMessage());
-            throw e;
-        }
     }
 }

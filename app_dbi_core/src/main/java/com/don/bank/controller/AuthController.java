@@ -3,10 +3,13 @@ package com.don.bank.controller;
 import com.don.bank.dto.LoginClientDTO;
 import com.don.bank.dto.RegisterClientDTO;
 import com.don.bank.service.AuthService;
+import com.don.bank.util.JWT.JWTTokenCookie;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -15,6 +18,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Map;
 
 @RestController
@@ -30,13 +34,25 @@ public class AuthController {
 
     }
 
+    @Operation(summary = "Authorization client")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "JSON with id client"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody @Validated LoginClientDTO loginClientDTO) {
+    public ResponseEntity login(@RequestBody @Validated LoginClientDTO loginClientDTO, HttpServletResponse response) {
         try {
-            return ResponseEntity.ok(Map.of("message" , "Successfully auth", "token", authService.login(loginClientDTO)));
+            Map<String, Object> result = authService.login(loginClientDTO);
+
+            JWTTokenCookie.addToken(response, result.get("token").toString());
+
+            return ResponseEntity.ok(Map.of("id", result.get("id"), "redirect", "/"));
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("message", "Invalid phone number or password"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Error in login"));
         }
     }
 
@@ -47,10 +63,11 @@ public class AuthController {
     })
     @PostMapping("/register")
     public ResponseEntity register(
-            @Parameter(description = "Client data to be created", required = true) @RequestBody @Validated RegisterClientDTO registerClientDTO) {
+            @Parameter(description = "Client data to be created", required = true) @RequestBody @Validated RegisterClientDTO registerClientDTO, HttpServletResponse response) {
         try {
             authService.register(registerClientDTO);
-            return new ResponseEntity<>(Map.of("message", "Register successfully"), HttpStatus.CREATED);
+
+            return new ResponseEntity<>(Map.of("message", "Register successfully", "redirect", "/login"), HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             log.error(e.getMessage());
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
@@ -58,5 +75,12 @@ public class AuthController {
             log.error(e.getMessage());
             return ResponseEntity.internalServerError().body(Map.of("message","Error while register client"));
         }
+    }
+
+    @GetMapping("/logout")
+    public void logout(HttpServletResponse response) throws IOException {
+        JWTTokenCookie.removeToken(response);
+
+        response.sendRedirect("/login");
     }
 }

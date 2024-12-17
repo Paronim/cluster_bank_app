@@ -84,7 +84,7 @@ class ClientControllerTest {
         long clientId = 1L;
         ClientDTO clientDTO = ClientDTO.builder().id(1L).firstName("Client").lastName("Name").build();
         when(clientService.getById(clientId)).thenReturn(clientDTO);
-        when(clientService.updateClient(clientDTO)).thenReturn(clientDTO);
+        doNothing().when(clientService).updateClient(clientDTO);
 
         mockMvc.perform(put("/clients")
                         .contentType(MediaType.APPLICATION_JSON)

@@ -29,7 +29,7 @@ public class MappingUtils {
                 .id(client.getId())
                 .firstName(client.getFirstName())
                 .lastName(client.getLastName())
-                .phone(client.getPhone())
+                .phone(String.valueOf(client.getPhone()))
                 .accounts(accountsId)
                 .build();
 
@@ -41,7 +41,7 @@ public class MappingUtils {
                 .id(clientDTO.getId())
                 .firstName(clientDTO.getFirstName())
                 .lastName(clientDTO.getLastName())
-                .phone(clientDTO.getPhone())
+                .phone(Long.parseLong(clientDTO.getPhone()))
                 .build();
     }
 

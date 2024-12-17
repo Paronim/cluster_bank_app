@@ -28,7 +28,7 @@ public class ClientDTO {
     @Schema(description = "Phone of the client", example = "79001001010")
     @NotNull(message = "Phone is required")
     @Pattern(regexp = "^7\\d{10}$", message = "Client number phone not valid")
-    private long phone;
+    private String phone;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<Long> accounts;
