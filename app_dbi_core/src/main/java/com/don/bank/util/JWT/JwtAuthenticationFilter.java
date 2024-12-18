@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -47,7 +48,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             if (id != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(id);
+
+                UserDetails userDetails;
+
+                try {
+                    userDetails = userDetailsService.loadUserByUsername(id);
+                } catch (UsernameNotFoundException e) {
+                    JWTTokenCookie.removeToken(response);
+                    return;
+                }
 
                 if (jwtUtil.validateToken(jwt, userDetails.getUsername())) {
                     UsernamePasswordAuthenticationToken authenticationToken =
