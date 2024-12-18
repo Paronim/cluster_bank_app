@@ -8,7 +8,6 @@ import com.don.bank.entity.Account;
 import com.don.bank.entity.Client;
 import com.don.bank.entity.Transaction;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 

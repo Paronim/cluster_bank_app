@@ -1,7 +1,6 @@
 package com.don.bank.controller;
 
 import com.don.bank.dto.ClientDTO;
-import com.don.bank.entity.Client;
 import com.don.bank.service.ClientService;
 import com.don.bank.util.JWT.JWTTokenCookie;
 import io.swagger.v3.oas.annotations.Operation;

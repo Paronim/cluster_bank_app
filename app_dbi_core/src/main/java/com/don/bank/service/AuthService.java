@@ -50,8 +50,6 @@ public class AuthService {
 
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
         CustomUserDetails userData = (CustomUserDetails) authentication.getPrincipal();
 
         return Map.of("token", jwtUtils.generateToken(userData.getUsername()), "id", client.getId());

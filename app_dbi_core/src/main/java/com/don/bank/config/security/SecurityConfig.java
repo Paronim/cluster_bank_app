@@ -1,8 +1,8 @@
 package com.don.bank.config.security;
 
+import com.don.bank.util.JWT.JWTTokenCookie;
 import com.don.bank.util.JWT.JwtAuthenticationFilter;
 import com.don.bank.util.JWT.JwtUtils;
-import jakarta.servlet.http.Cookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -73,6 +74,10 @@ public class SecurityConfig {
                 .exceptionHandling(e -> e.authenticationEntryPoint((request, response, authException) -> {
 
                     log.error(authException.getMessage(), authException);
+
+                    if (authException.getCause() instanceof UsernameNotFoundException) {
+                        JWTTokenCookie.removeToken(response);
+                    }
 
                     response.sendRedirect("/login");
                 }))
