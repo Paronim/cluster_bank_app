@@ -28,6 +28,13 @@ if (localStorage.getItem("clientId")) {
             module.initPopup()
         })
     }
+
+    if (page === "login"){
+       import("./yandexAuth.js").then((module) => {
+           module.initYandexAuth();
+       })
+
+    }
 }
 
 

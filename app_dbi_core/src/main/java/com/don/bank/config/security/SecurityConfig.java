@@ -17,6 +17,20 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
+import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -62,23 +76,52 @@ public class SecurityConfig {
                                 "/auth/login",
                                 "/login",
                                 "/register",
+                                "/error",
+                                "/auth/login/yandex",
+                                "/login/oauth2/code/yandex",
                                 "/WEB-INF/views/login.jsp",
                                 "/WEB-INF/views/error.jsp",
                                 "/WEB-INF/views/register.jsp",
+                                "/favicon.ico",
+                                "/login?error",
                                 "/js/**",
                                 "/css/**").permitAll()
                         .anyRequest().authenticated()
                 )
+                .oauth2Login(oauth2 -> oauth2
+                        .failureHandler((request, response, exception) -> {
+                            log.error(request.getRequestURI());
+                            log.error(request.getQueryString());
+                            log.error("Error OAuth2: {}", exception.getMessage(), exception);
+                            response.sendRedirect("/login?error");
+                        })
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService())
+                        )
+                )
                 .exceptionHandling(e -> e.authenticationEntryPoint((request, response, authException) -> {
 
+                    log.info(request.getRequestURI());
                     log.error(authException.getMessage(), authException);
 
-                    response.sendRedirect("/login");
+//                    response.sendRedirect("/login");
                 }))
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.NEVER))
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtil, customUserDetailsService), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    @Bean
+    public OAuth2UserService<OAuth2UserRequest, OAuth2User> customOAuth2UserService() {
+        return userRequest -> {
+            OAuth2AccessToken accessToken = userRequest.getAccessToken();
+            OAuth2User oauth2User = new DefaultOAuth2UserService().loadUser(userRequest);
+
+            System.out.println(oauth2User.getAttributes().toString());
+
+            return oauth2User;
+        };
     }
 
     @Bean

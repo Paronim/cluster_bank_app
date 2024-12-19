@@ -15,6 +15,7 @@
         <ui:input label="Password" required="true" name="password" type="text"/>
 
         <ui:error/>
+        <div id="yandex-auth"></div>
         <ui:button title="Submit" type="submit"/>
     </form>
 </section>

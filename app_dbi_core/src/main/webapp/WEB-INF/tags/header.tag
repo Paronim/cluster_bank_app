@@ -22,6 +22,9 @@
     <script>
         var page = "${page}"
     </script>
+    <c:if test="${page == 'login'}">
+        <script src="https://yastatic.net/s3/passport-sdk/autofill/v1/sdk-suggest-with-polyfills-latest.js"></script>
+    </c:if>
     <script type="module" src="/js/index.js"></script>
 </head>
 <header>
