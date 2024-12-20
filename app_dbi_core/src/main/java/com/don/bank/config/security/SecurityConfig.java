@@ -2,6 +2,7 @@ package com.don.bank.config.security;
 
 import com.don.bank.util.JWT.JwtAuthenticationFilter;
 import com.don.bank.util.JWT.JwtUtils;
+import com.don.bank.util.OAuth2Utils.CustomOAuth2LoginAuthenticationFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +26,8 @@ import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserServ
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
+import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
@@ -67,7 +70,9 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   ClientRegistrationRepository clientRegistrationRepository,
+                                                   OAuth2AuthorizedClientService authorizedClientService) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable
                 )
@@ -77,13 +82,14 @@ public class SecurityConfig {
                                 "/login",
                                 "/register",
                                 "/error",
-                                "/auth/login/yandex",
                                 "/login/oauth2/code/yandex",
                                 "/WEB-INF/views/login.jsp",
                                 "/WEB-INF/views/error.jsp",
                                 "/WEB-INF/views/register.jsp",
+                                "/WEB-INF/views/yandexAuth.jsp",
                                 "/favicon.ico",
                                 "/login?error",
+                                "/login/yandex",
                                 "/js/**",
                                 "/css/**").permitAll()
                         .anyRequest().authenticated()
@@ -93,7 +99,7 @@ public class SecurityConfig {
                             log.error(request.getRequestURI());
                             log.error(request.getQueryString());
                             log.error("Error OAuth2: {}", exception.getMessage(), exception);
-                            response.sendRedirect("/login?error");
+//                            response.sendRedirect("/login");
                         })
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService())
@@ -104,9 +110,13 @@ public class SecurityConfig {
                     log.info(request.getRequestURI());
                     log.error(authException.getMessage(), authException);
 
-//                    response.sendRedirect("/login");
+                    response.sendRedirect("/login");
                 }))
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.NEVER))
+                .addFilterBefore(
+                        new CustomOAuth2LoginAuthenticationFilter(),
+                        OAuth2LoginAuthenticationFilter.class
+                )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtil, customUserDetailsService), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -115,6 +125,7 @@ public class SecurityConfig {
     @Bean
     public OAuth2UserService<OAuth2UserRequest, OAuth2User> customOAuth2UserService() {
         return userRequest -> {
+            System.out.println("test");
             OAuth2AccessToken accessToken = userRequest.getAccessToken();
             OAuth2User oauth2User = new DefaultOAuth2UserService().loadUser(userRequest);
 

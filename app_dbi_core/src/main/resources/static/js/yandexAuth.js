@@ -4,7 +4,7 @@ export function initYandexAuth() {
         {
             client_id: "01cff104a423420ba6c8637bc7b16166",
             response_type: "token",
-            redirect_uri: "http://localhost:8080/login/oauth2/code/yandex"
+            redirect_uri: "http://localhost:8080/login/yandex"
         },
         "http://localhost",
         {

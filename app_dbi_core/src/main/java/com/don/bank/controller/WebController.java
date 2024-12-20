@@ -59,6 +59,18 @@ public class WebController {
         return "register";
     }
 
+    @GetMapping("/login/yandex")
+    public String yandexAuth(Model model, HttpServletRequest request) throws IOException {
+
+        String token = webService.getToken(request);
+
+        if(token != null) {
+            return "redirect:/";
+        }
+
+        return "yandexAuth";
+    }
+
     @GetMapping("/account/{id}")
     public String account(@PathVariable Long id, Model model) {
 
