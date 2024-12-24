@@ -5,6 +5,8 @@ import com.don.bank.dto.LoginClientDTO;
 import com.don.bank.dto.RegisterClientDTO;
 import com.don.bank.entity.Client;
 import com.don.bank.util.JWT.JwtUtils;
+import org.hibernate.validator.constraints.Length;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,7 +24,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
 
-    public AuthService(ClientService clientService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
+    public AuthService(ClientService clientService, PasswordEncoder passwordEncoder, @Lazy AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
         this.clientService = clientService;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;

@@ -75,11 +75,4 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/logout")
-    public void logout(HttpServletResponse response) throws IOException {
-        JWTTokenCookie.removeToken(response);
-
-        response.sendRedirect("/login");
-    }
-
 }

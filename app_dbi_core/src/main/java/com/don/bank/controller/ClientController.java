@@ -3,11 +3,14 @@ package com.don.bank.controller;
 import com.don.bank.dto.ClientDTO;
 import com.don.bank.service.ClientService;
 import com.don.bank.util.JWT.JWTTokenCookie;
+import com.don.bank.util.JWT.JwtUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,9 +27,11 @@ public class ClientController {
 
     private static final Logger log = LoggerFactory.getLogger(ClientController.class);
     private ClientService clientService;
+    private JwtUtils jwtUtils;
 
-    public ClientController(ClientService clientService) {
+    public ClientController(ClientService clientService, JwtUtils jwtUtils) {
         this.clientService = clientService;
+        this.jwtUtils = jwtUtils;
 
     }
 
@@ -115,5 +120,26 @@ public class ClientController {
             log.error(e.getMessage());
             return ResponseEntity.internalServerError().body(Map.of("message","Error while deleting client"));
         }
+    }
+
+    @GetMapping("/id")
+    public ResponseEntity getIdByToken(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("token".equals(cookie.getName())) {
+                    String token = cookie.getValue();
+
+                    try {
+                        return ResponseEntity.ok(Map.of("id", Long.parseLong(jwtUtils.extractUsername(token))));
+                    } catch (Exception e) {
+                        return new ResponseEntity<>(Map.of("message", "Error get client"), HttpStatus.UNAUTHORIZED);
+                    }
+                }
+            }
+        }
+
+        return new ResponseEntity<>(Map.of("message", "Token is missing"), HttpStatus.UNAUTHORIZED);
     }
 }

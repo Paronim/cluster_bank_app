@@ -16,12 +16,9 @@
 <body>
     <script>
         window.onload = function() {
-            const fragment = window.location.hash.substring(1);
-            const params = new URLSearchParams(fragment);
-
-            const queryString = params.toString();
-
-            fetch(window.location.origin + "/login/oauth2/code/yandex?" + queryString, {
+            const queryString = window.location.search;
+            console.log(${state})
+            fetch(window.location.origin + "/login/oauth2/code/yandex" + queryString + "&state=${state}", {
                 method: "GET"
             }).then(() => {
                 window.close()

@@ -3,10 +3,10 @@ export function initYandexAuth() {
     window.YaAuthSuggest.init(
         {
             client_id: "01cff104a423420ba6c8637bc7b16166",
-            response_type: "token",
-            redirect_uri: "http://localhost:8080/login/yandex"
+            response_type: "code",
+            redirect_uri: window.location.origin + "/login/yandex"
         },
-        "http://localhost",
+        window.location.origin,
         {
             view: "button",
             parentId: "yandex-auth",

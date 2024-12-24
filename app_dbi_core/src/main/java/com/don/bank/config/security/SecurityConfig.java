@@ -1,12 +1,20 @@
 package com.don.bank.config.security;
 
+import com.don.bank.dto.LoginClientDTO;
+import com.don.bank.dto.RegisterClientDTO;
+import com.don.bank.entity.Client;
+import com.don.bank.service.AuthService;
+import com.don.bank.service.ClientService;
+import com.don.bank.util.JWT.JWTTokenCookie;
 import com.don.bank.util.JWT.JwtAuthenticationFilter;
 import com.don.bank.util.JWT.JwtUtils;
-import com.don.bank.util.OAuth2Utils.CustomOAuth2LoginAuthenticationFilter;
+import com.don.bank.util.passwordGeneratorUtils.PasswordGenerator;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -15,27 +23,21 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
-import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedClientManager;
-import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
-import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
-import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
-import org.springframework.security.oauth2.core.OAuth2AccessToken;
-import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import java.util.Map;
+import java.util.Optional;
 
 @Configuration
 @EnableWebSecurity
@@ -44,10 +46,14 @@ public class SecurityConfig {
     private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
     private final JwtUtils jwtUtil;
     private final CustomUserDetailsService customUserDetailsService;
+    private final ClientService clientService;
+    private final AuthService authService;
 
-    public SecurityConfig(CustomUserDetailsService customUserDetailsService, JwtUtils jwtUtil) {
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService, JwtUtils jwtUtil, ClientService clientService, @Lazy AuthService authService) {
         this.jwtUtil = jwtUtil;
         this.customUserDetailsService = customUserDetailsService;
+        this.clientService = clientService;
+        this.authService = authService;
     }
 
     @Bean
@@ -70,9 +76,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   ClientRegistrationRepository clientRegistrationRepository,
-                                                   OAuth2AuthorizedClientService authorizedClientService) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable
                 )
@@ -95,11 +99,11 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/", true)
                         .failureHandler((request, response, exception) -> {
-                            log.error(request.getRequestURI());
-                            log.error(request.getQueryString());
                             log.error("Error OAuth2: {}", exception.getMessage(), exception);
-//                            response.sendRedirect("/login");
+                            response.sendRedirect("/login?error");
                         })
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService())
@@ -113,11 +117,18 @@ public class SecurityConfig {
                     response.sendRedirect("/login");
                 }))
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.NEVER))
-                .addFilterBefore(
-                        new CustomOAuth2LoginAuthenticationFilter(),
-                        OAuth2LoginAuthenticationFilter.class
-                )
-                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil, customUserDetailsService), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil, customUserDetailsService), UsernamePasswordAuthenticationFilter.class)
+                .logout(logout -> {
+                    logout.logoutUrl("/auth/logout");
+                    logout.logoutSuccessHandler((request, response, authentication) -> {
+
+                        JWTTokenCookie.removeToken(response);
+
+                        SecurityContextHolder.clearContext();
+
+                        response.sendRedirect("/login");
+                    });
+                });
 
         return http.build();
     }
@@ -125,11 +136,39 @@ public class SecurityConfig {
     @Bean
     public OAuth2UserService<OAuth2UserRequest, OAuth2User> customOAuth2UserService() {
         return userRequest -> {
-            System.out.println("test");
-            OAuth2AccessToken accessToken = userRequest.getAccessToken();
             OAuth2User oauth2User = new DefaultOAuth2UserService().loadUser(userRequest);
 
-            System.out.println(oauth2User.getAttributes().toString());
+            Map<String, Object> phoneData = (Map<String, Object>) oauth2User.getAttributes().get("default_phone");
+            String firstName = (String) oauth2User.getAttributes().get("first_name");
+            String lastName = (String) oauth2User.getAttributes().get("last_name");
+            String phoneNumber;
+
+            if (phoneData != null) {
+                phoneNumber = (String) phoneData.get("number");
+            } else {
+                log.error("phone is null");
+                throw new RuntimeException("phone is null");
+            }
+
+
+            if(clientService.existsByPhone(Long.parseLong(phoneNumber))) {
+                String password = PasswordGenerator.generatePassword(12);
+
+                authService.register(RegisterClientDTO.builder()
+                                .firstName(firstName)
+                                .lastName(lastName)
+                                .password(password)
+                                .phone(phoneNumber.substring(1))
+                                .build());
+            };
+
+            Optional<Client> clientData = clientService.getByPhone(Long.parseLong(phoneNumber));
+            Client client = clientData.get();
+
+            String token = jwtUtil.generateToken(String.valueOf(client.getId()));
+
+            HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
+            JWTTokenCookie.addToken(response, token);
 
             return oauth2User;
         };

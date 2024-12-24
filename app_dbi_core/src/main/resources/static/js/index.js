@@ -1,8 +1,13 @@
 import "./form.js"
 import "./auth.js"
+import {getClientId} from "./fetch/clients.js";
 
-if (localStorage.getItem("clientId")) {
+initModules()
+
+async function initModules() {
     if (page === "index") {
+        await getId()
+
         import("./client.js").then((module) => {
             module.initClient()
         })
@@ -15,6 +20,8 @@ if (localStorage.getItem("clientId")) {
     }
 
     if (page === "account") {
+        await getId()
+
         import("./account.js").then((module) => {
             module.initAccount()
         })
@@ -28,13 +35,16 @@ if (localStorage.getItem("clientId")) {
             module.initPopup()
         })
     }
-
-    if (page === "login"){
-       import("./yandexAuth.js").then((module) => {
-           module.initYandexAuth();
-       })
-
-    }
 }
+
+function getId() {
+    if(!localStorage.getItem("clientId"))
+        getClientId().then(clientId => {
+            console.log(clientId)
+            localStorage.setItem("clientId", clientId.id)
+        })
+}
+
+
 
 
