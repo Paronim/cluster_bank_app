@@ -1,10 +1,12 @@
 package com.don.bank.entity;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import lombok.*;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.*;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,6 +18,8 @@ import java.util.Objects;
 @Getter
 @Setter
 @Cacheable
+@DynamicInsert
+@DynamicUpdate
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Client implements Serializable {
 
@@ -29,9 +33,19 @@ public class Client implements Serializable {
     @Column(name = "last_name")
     private String lastName;
 
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
     private long phone;
 
     private String password;
+
+    private String status;
 
     @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
     private List<Account> accounts;

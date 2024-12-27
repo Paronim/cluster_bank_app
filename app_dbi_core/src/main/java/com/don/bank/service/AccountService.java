@@ -15,6 +15,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Service for managing accounts. Provides operations for creating, retrieving, updating,
@@ -146,20 +147,21 @@ public class AccountService {
      */
     @Transactional
     public AccountDTO updateAccount(AccountDTO accountDTO) {
-        Account oldAccount = getAccountById(accountDTO.getId());
+        Optional<Account> accountData = getEntityById(accountDTO.getId());
+        Account account = accountData.get();
 
-        if (accountDTO.getType().equals("secondary") && oldAccount.getType().equals(Account.Type.main)) {
+        if (accountDTO.getType().equals("secondary") && account.getType().equals(Account.Type.main)) {
             throw new IllegalArgumentException("type can't be main because account is secondary");
         }
 
-        if (accountDTO.getBalance() != 0 && accountDTO.getBalance() != oldAccount.getBalance()) {
+        if (accountDTO.getBalance() != 0 && accountDTO.getBalance() != account.getBalance()) {
             throw new IllegalArgumentException("balance can't be updated with this method");
         } else if (accountDTO.getBalance() == 0) {
-            accountDTO.setBalance(oldAccount.getBalance());
+            accountDTO.setBalance(account.getBalance());
         }
 
         if (Objects.equals(accountDTO.getType(), "main")) {
-            List<Account> accounts = getAccountsByClientIdEntity(oldAccount.getClient().getId());
+            List<Account> accounts = getAccountsByClientIdEntity(account.getClient().getId());
             Account mainAccount = accounts.stream()
                     .filter(a -> a.getType().equals(Account.Type.main))
                     .findFirst()
@@ -168,8 +170,10 @@ public class AccountService {
             accountRepository.save(mainAccount);
         }
 
-        accountDTO.setClientId(oldAccount.getClient().getId());
+        accountDTO.setClientId(account.getClient().getId());
         Account newAccount = MappingUtils.mapToAccount(accountDTO);
+        newAccount.setCreatedAt(account.getCreatedAt());
+        newAccount.setStatus(account.getStatus());
         return MappingUtils.mapToAccountDto(accountRepository.save(newAccount));
     }
 
@@ -179,13 +183,17 @@ public class AccountService {
      * @param id the account ID
      */
     public void deleteAccount(long id) {
-        Account account = getAccountById(id);
+
+        Optional<Account> accountData = getEntityById(id);
+        Account account = accountData.get();
 
         if (account.getType().equals(Account.Type.main)) {
             throw new IllegalArgumentException("can't delete main account");
         }
 
-        accountRepository.deleteById(id);
+        account.setStatus("deleted");
+
+        accountRepository.save(account);
     }
 
     /**
@@ -248,5 +256,10 @@ public class AccountService {
         }
 
         return MappingUtils.mapToAccountDto(accountRepository.save(account));
+    }
+
+    public Optional<Account> getEntityById(long id){
+
+        return accountRepository.findById(id);
     }
 }

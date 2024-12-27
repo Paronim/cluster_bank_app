@@ -17,6 +17,10 @@ async function initModules() {
         import("./transaction.js").then((module) => {
             module.initAllTransactions()
         })
+        import("./auth.js").then((module) => {
+            module.initAuth()
+        })
+
     }
 
     if (page === "account") {
@@ -27,6 +31,9 @@ async function initModules() {
         })
         import("./transaction.js").then((module) => {
             module.initTransactions()
+        })
+        import("./auth.js").then((module) => {
+            module.initAuth()
         })
     }
 

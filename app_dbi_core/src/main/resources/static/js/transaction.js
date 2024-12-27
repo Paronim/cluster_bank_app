@@ -24,7 +24,7 @@ function infoAll() {
     });
 }
 
-function infoAccount() {
+export function infoAccount() {
 
     const accountData = document.querySelector(".account-info");
 
@@ -45,24 +45,25 @@ function renderTransactions(account) {
     getTransaction(account.id)
         .then(transactions => {
 
-            if (infoBlock && transactions) {
-                infoBlock.innerHTML = ''
-                transactions.forEach(async transaction => {
+            if (infoBlock) {
+                if(transactions.length > 0) {
+                    infoBlock.innerHTML = ''
+                    transactions.forEach(async transaction => {
 
-                    let dateObj = new Date(transaction.createdAt);
-                    const date = dateObj.toISOString().split("T")[0];
-                    const time = dateObj.toTimeString().split(" ")[0];
+                        let dateObj = new Date(transaction.createdAt);
+                        const date = dateObj.toISOString().split("T")[0];
+                        const time = dateObj.toTimeString().split(" ")[0];
 
-                    let recipient;
-                    if (transaction.recipientId) {
-                        recipient = await getAccount(transaction.recipientId).then(recipient => {
-                            return recipient
-                        }).catch(e => {
-                            console.error("Request failed:", e.message);
-                        });
-                    }
+                        let recipient;
+                        if (transaction.recipientId) {
+                            recipient = await getAccount(transaction.recipientId).then(recipient => {
+                                return recipient
+                            }).catch(e => {
+                                console.error("Request failed:", e.message);
+                            });
+                        }
 
-                    infoBlock.innerHTML += `<div class="transaction-element">
+                        infoBlock.innerHTML += `<div class="transaction-element">
 
                             <div>
                                 <p>${date}</p> 
@@ -83,8 +84,12 @@ function renderTransactions(account) {
                             </div>
                       </div>
                     `;
-                })
+                    })
 
+                } else {
+                    infoBlock.innerHTML = ''
+                    infoBlock.innerHTML += `<p>null transactions</p>`
+                }
 
             }
         })

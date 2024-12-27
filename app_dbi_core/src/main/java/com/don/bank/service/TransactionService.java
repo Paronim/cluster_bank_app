@@ -2,6 +2,7 @@ package com.don.bank.service;
 
 import com.don.bank.dto.TransactionDTO;
 import com.don.bank.entity.Account;
+import com.don.bank.entity.Client;
 import com.don.bank.entity.Transaction;
 import com.don.bank.repository.TransactionRepository;
 import com.don.bank.util.mappingUtils.MappingUtils;
@@ -21,6 +22,7 @@ import java.net.URI;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Service class responsible for managing transactions within the banking system.
@@ -169,13 +171,12 @@ public class TransactionService {
         accountService.withdrawBalance(transaction.getAccount().getId(), transaction.getAmount());
 
         if (!accountSender.getCurrency().equals(accountRecipient.getCurrency())) {
-            transaction.setAmount(convertorCurrencyService.convert(
+            transaction.setAmount(convertMoney(
+                    transaction,
                     transaction.getAmount(),
                     String.valueOf(accountSender.getCurrency()),
                     String.valueOf(accountRecipient.getCurrency())));
         }
-
-        transaction.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
 
         accountService.depositBalance(transaction.getRecipient().getId(), transaction.getAmount());
 
@@ -184,6 +185,20 @@ public class TransactionService {
         producerService.send(MappingUtils.mapToTransactionDto(savedTransaction));
     }
 
+    public double convertMoney(Transaction transaction, double amount, String senderCurrency, String recipientCurrency) {
+
+        transactionRepository.save(Transaction.builder()
+                .amount(amount)
+                .transactionType(Transaction.TransactionType.CONVERT)
+                .recipient(transaction.getRecipient())
+                .account(transaction.getAccount())
+                .build());
+
+        return convertorCurrencyService.convert(
+                amount,
+                senderCurrency,
+                recipientCurrency);
+    }
     /**
      * Transfers transactions from the local database to an external service via REST API.
      * It retrieves all transactions from the repository, converts them to {@link TransactionDTO},
@@ -201,4 +216,5 @@ public class TransactionService {
                 .retrieve()
                 .toBodilessEntity();
     }
+
 }

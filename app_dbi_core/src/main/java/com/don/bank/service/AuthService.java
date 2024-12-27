@@ -46,7 +46,11 @@ public class AuthService {
 
     public Map<String, Object> login (LoginClientDTO loginClientDTO){
 
-        Client client = clientService.getByPhone(Long.parseLong(loginClientDTO.getPhone())).orElseGet(null);
+        Client client = clientService.getByPhone(Long.parseLong(loginClientDTO.getPhone())).orElse(null);
+
+        if(client == null){
+            throw new IllegalArgumentException("Client with phone number " + loginClientDTO.getPhone() + " does not exist");
+        }
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(client.getId(), loginClientDTO.getPassword());
 

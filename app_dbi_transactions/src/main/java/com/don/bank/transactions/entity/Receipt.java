@@ -17,7 +17,8 @@ public class Receipt {
     public enum TransactionType {
         DEPOSIT,
         WITHDRAW,
-        TRANSFER
+        TRANSFER,
+        CONVERT
     }
 
     @Id

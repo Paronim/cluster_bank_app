@@ -1,5 +1,6 @@
 import {subscribe} from "./form.js";
 import {getAccounts} from "./fetch/accounts.js";
+import {showNotification} from "./form.js"
 
 let url = "http://" + window.location.host + "/accounts";
 
@@ -15,6 +16,7 @@ export function initAccounts() {
 function callbackCreate(){
     const button =  document.querySelector(".create-account");
     info()
+    showNotification("Create account successfully")
     button.click();
 }
 

@@ -1,6 +1,5 @@
 package com.don.bank.config.security;
 
-import com.don.bank.dto.LoginClientDTO;
 import com.don.bank.dto.RegisterClientDTO;
 import com.don.bank.entity.Client;
 import com.don.bank.service.AuthService;
@@ -103,6 +102,7 @@ public class SecurityConfig {
                         .defaultSuccessUrl("/", true)
                         .failureHandler((request, response, exception) -> {
                             log.error("Error OAuth2: {}", exception.getMessage(), exception);
+                            SecurityContextHolder.clearContext();
                             response.sendRedirect("/login?error");
                         })
                         .userInfoEndpoint(userInfo -> userInfo
@@ -113,6 +113,8 @@ public class SecurityConfig {
 
                     log.info(request.getRequestURI());
                     log.error(authException.getMessage(), authException);
+
+                    SecurityContextHolder.clearContext();
 
                     response.sendRedirect("/login");
                 }))

@@ -1,9 +1,11 @@
 package com.don.bank.entity;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import lombok.*;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.*;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Builder
@@ -14,6 +16,8 @@ import java.util.Objects;
 @Getter
 @Setter
 @Cacheable
+@DynamicInsert
+@DynamicUpdate
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Account {
 
@@ -45,9 +49,19 @@ public class Account {
     @Enumerated(EnumType.STRING)
     private Type type;
 
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id", referencedColumnName = "id")
     private Client client;
+
+    private String status;
 
     @Override
     public boolean equals(Object o) {

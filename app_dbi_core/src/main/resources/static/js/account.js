@@ -1,5 +1,7 @@
 import {subscribe} from "./form.js";
 import {getAccount} from "./fetch/accounts.js";
+import {infoAccount} from "./transaction.js"
+import {showNotification} from "./form.js"
 
 export function initAccount() {
     info()
@@ -13,6 +15,7 @@ export function initAccount() {
 function callbackUpdate() {
     const button = document.querySelector(".update-account");
     updateInfo()
+    showNotification("update account successfully")
     button.click();
 }
 
@@ -23,18 +26,24 @@ function callbackDelete() {
 function callbackTransfer() {
     const button = document.querySelector(".transfer-account");
     updateInfo()
+    infoAccount()
+    showNotification("Transfer successfully")
     button.click();
 }
 
 function callbackWithdraw() {
     const button = document.querySelector(".withdraw-account");
     updateInfo()
+    infoAccount()
+    showNotification("Withdraw successfully")
     button.click();
 }
 
 function callbackDeposit() {
     const button = document.querySelector(".deposit-account");
     updateInfo()
+    infoAccount()
+    showNotification("Deposit successfully")
     button.click();
 }
 

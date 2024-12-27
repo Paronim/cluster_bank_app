@@ -3,6 +3,9 @@ package com.don.bank.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.sql.Timestamp;
 import java.util.Objects;
@@ -15,13 +18,16 @@ import java.util.Objects;
 @Getter
 @Setter
 @Cacheable
+@DynamicInsert
+@DynamicUpdate
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Transaction {
 
     public enum TransactionType {
         DEPOSIT,
         WITHDRAW,
-        TRANSFER
+        TRANSFER,
+        CONVERT
     }
 
     @Id
@@ -35,6 +41,7 @@ public class Transaction {
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
 
+    @CreationTimestamp
     @Column(name = "created_at")
     private Timestamp createdAt;
 
@@ -45,6 +52,8 @@ public class Transaction {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipient_account_id", referencedColumnName = "id")
     private Account recipient;
+
+    private String status;
 
     @Override
     public boolean equals(Object o) {

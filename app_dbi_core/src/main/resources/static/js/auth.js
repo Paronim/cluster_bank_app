@@ -1,16 +1,10 @@
-let auth = true
+export function initAuth() {
 
-let clientId = localStorage.getItem("clientId")
+    const logoutElement = document.querySelector("#Logout")
 
-document.addEventListener("DOMContentLoaded", () => {
-    const logout = document.querySelector("#sign-out");
-
-    if (logout) {
-
-        logout.addEventListener("click", () => {
-            document.cookie = "";
-
-            window.location.reload();
+    if(logoutElement){
+        logoutElement.addEventListener("click", event => {
+            localStorage.removeItem("clientId");
         })
     }
-})
+}

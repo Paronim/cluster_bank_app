@@ -47,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 id = jwtUtil.extractUsername(jwt);
             }
 
-            if (id != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (id != null) {
 
                 UserDetails userDetails;
 
@@ -55,10 +55,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     userDetails = userDetailsService.loadUserByUsername(id);
                 } catch (UsernameNotFoundException e) {
                     JWTTokenCookie.removeToken(response);
+                    SecurityContextHolder.clearContext();
+                    response.sendRedirect("/login");
                     return;
                 }
 
-                if (jwtUtil.validateToken(jwt, userDetails.getUsername())) {
+                if (jwtUtil.validateToken(jwt, userDetails.getUsername()) && SecurityContextHolder.getContext().getAuthentication() == null) {
                     UsernamePasswordAuthenticationToken authenticationToken =
                             new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);

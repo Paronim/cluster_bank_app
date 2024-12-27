@@ -19,10 +19,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 formData.set('phone', phone.replace(/\D/g, ""))
             }
 
-            formData.forEach(el => {
-                console.log(el);
-            })
-
             const submitButton = form.querySelector("button[type='submit']");
             const error = form.querySelector(".error-wrapper");
 
@@ -144,3 +140,18 @@ function phoneMask() {
 export function subscribe(key, callback) {
     observable.subscribe(key, callback)
 }
+
+export function showNotification(message) {
+    const container = document.getElementById('notification-container');
+
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.innerText = message;
+
+    container.appendChild(notification);
+
+    setTimeout(() => {
+        notification.remove();
+    }, 5000);
+}
+

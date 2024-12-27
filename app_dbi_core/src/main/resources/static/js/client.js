@@ -1,5 +1,6 @@
 import {subscribe} from "./form.js";
 import {getClient} from "./fetch/clients.js";
+import {showNotification} from "./form.js"
 
 const clientId = localStorage.getItem("clientId");
 
@@ -14,11 +15,13 @@ export function initClient() {
 function callbackUpdate(){
     const button =  document.querySelector(".update-client");
     info()
+    showNotification("Update client successfully")
     button.click();
 }
 
 function callbackDelete(){
     localStorage.removeItem("clientId");
+    window.location.reload()
 }
 
 function info(){

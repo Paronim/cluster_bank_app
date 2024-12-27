@@ -42,4 +42,5 @@
             </c:otherwise>
         </c:choose>
     </div>
+    <div id="notification-container"></div>
 </header>

@@ -82,8 +82,14 @@ public class ClientService {
      */
     public void updateClient(ClientDTO clientDTO) {
 
-        Client client = MappingUtils.mapToClient(clientDTO);
-        clientRepository.updateClient(client);
+        Optional<Client> clientData = getEntityById(clientDTO.getId());
+        Client client = clientData.get();
+
+        Client newClient = MappingUtils.mapToClient(clientDTO);
+        newClient.setPassword(client.getPassword());
+        newClient.setCreatedAt(client.getCreatedAt());
+        newClient.setStatus(client.getStatus());
+        clientRepository.save(newClient);
 
     }
 
@@ -93,7 +99,12 @@ public class ClientService {
      * @param id the client ID
      */
     public void deleteClient(long id) {
-        clientRepository.deleteById(id);
+        Optional<Client> clientData = getEntityById(id);
+        Client client = clientData.get();
+
+        client.setStatus("deleted");
+
+        clientRepository.save(client);
     }
 
     public boolean existsByPhone(long phone){

@@ -46,9 +46,12 @@ public class ConvertorCurrencyService {
                     .retrieve()
                     .toEntity(ConvertDTO.class);
 
-            return Objects.requireNonNull(response.getBody())
+            double result =  Objects.requireNonNull(response.getBody())
                     .getConvertRates()
                     .get(to) * amount;
+
+            double scale = Math.pow(10, 3);
+            return Math.ceil(result * scale) / scale;
 
         } catch (Exception e) {
             throw new RuntimeException("Error during currency conversion: " + e.getMessage(), e);
