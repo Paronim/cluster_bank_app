@@ -4,9 +4,11 @@ import com.don.bank.dto.AccountDTO;
 import com.don.bank.entity.Account;
 import com.don.bank.entity.Client;
 import com.don.bank.entity.Transaction;
+import com.don.bank.exception.account.AccountNotFoundException;
+import com.don.bank.exception.account.ErrorDeleteAccountException;
+import com.don.bank.exception.transaction.MoneyTransactionException;
 import com.don.bank.repository.AccountRepository;
 import com.don.bank.util.mappingUtils.MappingUtils;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,7 @@ import java.util.Optional;
 public class AccountService {
 
     private final AccountRepository accountRepository;
+
     private final TransactionService transactionService;
 
     /**
@@ -91,7 +94,7 @@ public class AccountService {
         Account account = accountRepository.findById(id).orElse(null);
 
         if (account == null) {
-            throw new EntityNotFoundException("Account with id " + id + " not found");
+            throw new AccountNotFoundException("Account with id " + id + " not found");
         }
 
         return MappingUtils.mapToAccountDto(account);
@@ -106,6 +109,7 @@ public class AccountService {
      * @param client the associated client
      * @return the created account entity
      */
+
     public Account createAccount(String currency, double balance, String name, String type, Client client) {
         return accountRepository.save(Account.builder()
                 .currency(Account.Currency.valueOf(currency))
@@ -165,7 +169,7 @@ public class AccountService {
             Account mainAccount = accounts.stream()
                     .filter(a -> a.getType().equals(Account.Type.main))
                     .findFirst()
-                    .orElseThrow(() -> new IllegalStateException("Main account not found"));
+                    .orElseThrow(() -> new AccountNotFoundException("Main account not found"));
             mainAccount.setType(Account.Type.secondary);
             accountRepository.save(mainAccount);
         }
@@ -188,7 +192,7 @@ public class AccountService {
         Account account = accountData.get();
 
         if (account.getType().equals(Account.Type.main)) {
-            throw new IllegalArgumentException("can't delete main account");
+            throw new ErrorDeleteAccountException("can't delete main account");
         }
 
         account.setStatus("deleted");
@@ -208,11 +212,11 @@ public class AccountService {
         Account account = getAccountById(id);
 
         if (account == null) {
-            throw new IllegalArgumentException("account not found");
+            throw new AccountNotFoundException("account not found");
         }
 
         if (account.getBalance() < amount) {
-            throw new IllegalArgumentException("not enough money");
+            throw new MoneyTransactionException("not enough money");
         }
 
         account.setBalance(account.getBalance() - amount);
@@ -241,7 +245,7 @@ public class AccountService {
         Account account = getAccountById(id);
 
         if (account == null) {
-            throw new IllegalArgumentException("account not found");
+            throw new AccountNotFoundException("account not found");
         }
 
         account.setBalance(account.getBalance() + amount);

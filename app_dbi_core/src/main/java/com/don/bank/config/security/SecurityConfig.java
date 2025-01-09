@@ -43,9 +43,13 @@ import java.util.Optional;
 public class SecurityConfig {
 
     private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
+
     private final JwtUtils jwtUtil;
+
     private final CustomUserDetailsService customUserDetailsService;
+
     private final ClientService clientService;
+
     private final AuthService authService;
 
     public SecurityConfig(CustomUserDetailsService customUserDetailsService, JwtUtils jwtUtil, ClientService clientService, @Lazy AuthService authService) {

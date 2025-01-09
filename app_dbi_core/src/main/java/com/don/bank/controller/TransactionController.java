@@ -1,6 +1,7 @@
 package com.don.bank.controller;
 
 import com.don.bank.dto.TransactionDTO;
+import com.don.bank.exception.account.AccountNotFoundException;
 import com.don.bank.service.TransactionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -18,6 +19,7 @@ import java.util.Map;
 public class TransactionController {
 
     private static final Logger log = LoggerFactory.getLogger(TransactionController.class);
+
     private final TransactionService transactionService;
 
     public TransactionController(TransactionService transactionService) {
@@ -82,7 +84,7 @@ public class TransactionController {
         try {
             transactionService.transferMoney(transactionDTO);
             return ResponseEntity.ok(Map.of("message","Money transferred successfully"));
-        } catch (IllegalArgumentException e) {
+        } catch (AccountNotFoundException e) {
             log.error(e.getMessage());
             return ResponseEntity.badRequest().body(Map.of("message","Error transferring money: " + e.getMessage()));
         } catch (Exception e) {

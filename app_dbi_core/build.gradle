@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.3.5'
 	id 'io.spring.dependency-management' version '1.1.6'
+	id 'checkstyle'
 }
 
 group = 'com.don'
@@ -21,6 +22,11 @@ configurations {
 
 repositories {
 	mavenCentral()
+}
+
+checkstyle {
+	toolVersion = '10.12.2'
+	configFile = file('src/main/resources/checkstyle.xml')
 }
 
 dependencies {
@@ -50,11 +56,20 @@ dependencies {
 	implementation 'javax.cache:cache-api'
 	implementation 'org.ehcache:ehcache'
 
+	implementation 'com.puppycrawl.tools:checkstyle:10.21.0'
+
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'io.zonky.test:embedded-database-spring-test:2.5.1'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.withType(Checkstyle).configureEach {
+	reports {
+		xml.required.set(true)
+		html.required.set(true)
+	}
 }
 
 tasks.named('test') {

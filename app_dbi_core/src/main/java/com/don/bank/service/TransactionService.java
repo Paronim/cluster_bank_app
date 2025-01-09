@@ -4,6 +4,7 @@ import com.don.bank.dto.TransactionDTO;
 import com.don.bank.entity.Account;
 import com.don.bank.entity.Client;
 import com.don.bank.entity.Transaction;
+import com.don.bank.exception.account.AccountNotFoundException;
 import com.don.bank.repository.TransactionRepository;
 import com.don.bank.util.mappingUtils.MappingUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,9 +35,13 @@ import java.util.Optional;
 public class TransactionService {
 
     private final TransactionRepository transactionRepository;
+
     private final ConvertorCurrencyService convertorCurrencyService;
+
     private final AccountService accountService;
+
     private final ProducerService producerService;
+
     private final RestClient restClient;
 
     @Value("${transactions.service.api.url}")
@@ -165,7 +170,7 @@ public class TransactionService {
         Account accountRecipient = accountService.getAccountById(transaction.getRecipient().getId());
 
         if (accountSender == null || accountRecipient == null) {
-            throw new IllegalArgumentException("Account not found");
+            throw new AccountNotFoundException("Account not found");
         }
 
         accountService.withdrawBalance(transaction.getAccount().getId(), transaction.getAmount());
@@ -204,7 +209,9 @@ public class TransactionService {
      * It retrieves all transactions from the repository, converts them to {@link TransactionDTO},
      * and sends them to the external service.
      */
+
     public void transferTransactionFromElasticsearch() {
+
         List<Transaction> transactions = transactionRepository.findAll();
 
         List<TransactionDTO> transactionDTOList = transactions.stream().map(MappingUtils::mapToTransactionDto).toList();

@@ -20,8 +20,11 @@ import java.util.Map;
 public class AuthService {
 
     private final ClientService clientService;
+
     private final PasswordEncoder passwordEncoder;
+
     private final AuthenticationManager authenticationManager;
+
     private final JwtUtils jwtUtils;
 
     public AuthService(ClientService clientService, PasswordEncoder passwordEncoder, @Lazy AuthenticationManager authenticationManager, JwtUtils jwtUtils) {

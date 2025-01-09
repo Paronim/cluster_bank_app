@@ -1,6 +1,10 @@
 package com.don.bank.controller;
 
 import com.don.bank.dto.AccountDTO;
+import com.don.bank.exception.account.AccountNotFoundException;
+import com.don.bank.exception.account.ErrorDeleteAccountException;
+import com.don.bank.exception.client.ClientNotFoundException;
+import com.don.bank.exception.transaction.MoneyTransactionException;
 import com.don.bank.service.AccountService;
 import com.don.bank.service.ClientService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,7 +26,9 @@ import java.util.Map;
 public class AccountController {
 
     private static final Logger log = LoggerFactory.getLogger(ClientController.class);
+
     private AccountService accountService;
+
     private ClientService clientService;
 
     public AccountController(AccountService accountService, ClientService clientService) {
@@ -61,7 +67,7 @@ public class AccountController {
     public ResponseEntity getAccountById(@Parameter(description = "Unique identifier of the account", required = true) @PathVariable Long id) {
         try {
             return ResponseEntity.ok(accountService.getAccountDTOById(id));
-        } catch (EntityNotFoundException e) {
+        } catch (AccountNotFoundException e) {
             log.warn("Account not found: {}", id);
             return new ResponseEntity<>(Map.of("message", e.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
@@ -91,7 +97,7 @@ public class AccountController {
         try {
             clientService.getById(accountDTO.getClientId());
             return ResponseEntity.ok(accountService.createAccount(accountDTO));
-        } catch (EntityNotFoundException e) {
+        } catch (ClientNotFoundException e) {
             log.warn("Client not found: {}", accountDTO.getClientId());
             return new ResponseEntity<>(Map.of("message", e.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
@@ -113,11 +119,11 @@ public class AccountController {
             @RequestBody AccountDTO accountDTO) {
         try {
             if (accountService.getAccountById(accountDTO.getId()) == null) {
-                throw new EntityNotFoundException("Account not found");
+                throw new AccountNotFoundException();
             }
 
             return ResponseEntity.ok(accountService.updateAccount(accountDTO));
-        } catch (EntityNotFoundException e) {
+        } catch (AccountNotFoundException e) {
             log.error("Error updating account: ", e);
             return new ResponseEntity<>(Map.of("message","Error updating account: " + e.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
@@ -140,7 +146,10 @@ public class AccountController {
         try {
             accountService.deleteAccount(id);
             return ResponseEntity.ok(Map.of("message", "Account deleted " + id));
-        } catch (IllegalArgumentException e) {
+        } catch (AccountNotFoundException e) {
+            log.error("Account not found: ", e);
+            return new ResponseEntity<>(Map.of("message", e.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (ErrorDeleteAccountException e) {
             log.error("Error deleting account: ", e);
             return ResponseEntity.badRequest().body(Map.of("message", "Error deleting account: " + e.getMessage()));
         } catch (Exception e) {
@@ -159,9 +168,12 @@ public class AccountController {
             @RequestBody Map<String, Double> withdraw) {
         try {
             return ResponseEntity.ok(accountService.withdrawBalance(id, withdraw.get("amount"), "transaction"));
-        } catch (IllegalArgumentException e) {
-            log.error("Error withdrawing balance: ", e);
-            return ResponseEntity.badRequest().body(Map.of("message", "Error withdrawing balance: " + e.getMessage()));
+        } catch (AccountNotFoundException e) {
+            log.error("Account not found: ", e);
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        } catch (MoneyTransactionException e) {
+            log.error("Error money transaction: ", e);
+            return ResponseEntity.badRequest().body(Map.of("message", "Error money transaction: " + e.getMessage()));
         } catch (Exception e) {
             log.error("Error withdrawing balance: ", e);
             return ResponseEntity.internalServerError().body(Map.of(
@@ -178,9 +190,9 @@ public class AccountController {
             @RequestBody Map<String, Double> deposit) {
         try {
             return ResponseEntity.ok(accountService.depositBalance(id, deposit.get("amount"), "transaction"));
-        } catch (IllegalArgumentException e) {
-            log.error("Error depositing balance: ", e);
-            return ResponseEntity.badRequest().body(Map.of("message", "Error depositing balance: " + e.getMessage()));
+        } catch (AccountNotFoundException e) {
+            log.error("Account not found: ", e);
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         } catch (Exception e) {
             log.error("Error depositing balance: ", e);
             return ResponseEntity.internalServerError().body(Map.of(

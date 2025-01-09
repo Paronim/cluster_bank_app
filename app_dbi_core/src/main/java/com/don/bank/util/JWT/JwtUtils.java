@@ -1,4 +1,5 @@
 package com.don.bank.util.JWT;
+
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.security.Keys;
@@ -18,7 +19,9 @@ public class JwtUtils {
 
     @Value("${jwt.secret}")
     private String secretKey;
+
     private static final Logger log = LoggerFactory.getLogger(JwtUtils.class);
+
     private Key key;
 
     @PostConstruct

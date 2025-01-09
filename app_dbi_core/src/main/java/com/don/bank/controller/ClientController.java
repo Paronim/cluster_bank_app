@@ -1,6 +1,7 @@
 package com.don.bank.controller;
 
 import com.don.bank.dto.ClientDTO;
+import com.don.bank.exception.client.ClientNotFoundException;
 import com.don.bank.service.ClientService;
 import com.don.bank.util.JWT.JWTTokenCookie;
 import com.don.bank.util.JWT.JwtUtils;
@@ -8,7 +9,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,7 +26,9 @@ import java.util.Map;
 public class ClientController {
 
     private static final Logger log = LoggerFactory.getLogger(ClientController.class);
+
     private ClientService clientService;
+
     private JwtUtils jwtUtils;
 
     public ClientController(ClientService clientService, JwtUtils jwtUtils) {
@@ -47,7 +49,7 @@ public class ClientController {
         try {
             ClientDTO client = clientService.getById(id);
             return ResponseEntity.ok(client);
-        } catch (EntityNotFoundException e) {
+        } catch (ClientNotFoundException e) {
             log.warn("Client not found: {}", id);
             return new ResponseEntity<>(Map.of("message", e.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
@@ -68,7 +70,7 @@ public class ClientController {
         try {
             ClientDTO client = clientService.getById(id);
             return ResponseEntity.ok(client.getAccounts());
-        } catch (EntityNotFoundException e) {
+        } catch (ClientNotFoundException e) {
             log.warn("Client not found: {}", id);
             return new ResponseEntity<>(Map.of("message", e.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
@@ -90,7 +92,7 @@ public class ClientController {
             clientService.getById(clientDTO.getId());
             clientService.updateClient(clientDTO);
             return ResponseEntity.ok(Map.of("massege", "Update client successfully"));
-        } catch (EntityNotFoundException e) {
+        } catch (ClientNotFoundException e) {
             log.warn("Client not found: {}", clientDTO.getId());
             return new ResponseEntity<>(Map.of("message", e.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
@@ -113,7 +115,7 @@ public class ClientController {
             clientService.deleteClient(id);
             JWTTokenCookie.removeToken(response);
             return ResponseEntity.ok(Map.of("message","Deleted client successfully: " + id, "redirect", "/login"));
-        } catch (EntityNotFoundException e) {
+        } catch (ClientNotFoundException e) {
             log.warn("Client not found: {}", id);
             return new ResponseEntity<>(Map.of("message", e.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception e) {

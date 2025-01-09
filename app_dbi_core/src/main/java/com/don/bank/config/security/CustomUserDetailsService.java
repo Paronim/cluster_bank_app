@@ -15,6 +15,7 @@ import java.util.Optional;
 public class CustomUserDetailsService implements UserDetailsService {
 
     private static final Logger log = LoggerFactory.getLogger(CustomUserDetailsService.class);
+
     private final ClientService clientService;
 
     public CustomUserDetailsService(ClientService clientService) {

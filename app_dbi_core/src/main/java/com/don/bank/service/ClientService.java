@@ -4,6 +4,7 @@ import com.don.bank.dto.ClientDTO;
 import com.don.bank.dto.RegisterClientDTO;
 import com.don.bank.entity.Account;
 import com.don.bank.entity.Client;
+import com.don.bank.exception.client.ClientNotFoundException;
 import com.don.bank.repository.ClientRepository;
 import com.don.bank.util.mappingUtils.MappingUtils;
 import jakarta.persistence.EntityNotFoundException;
@@ -22,6 +23,7 @@ import java.util.Optional;
 public class ClientService {
 
     private final ClientRepository clientRepository;
+
     private final AccountService accountService;
 
     /**
@@ -46,7 +48,7 @@ public class ClientService {
         Client client = clientRepository.findById(id).orElse(null);
 
         if (client == null) {
-            throw new EntityNotFoundException("Client with id " + id + " not found");
+            throw new ClientNotFoundException();
         }
 
         return MappingUtils.mapToClientDto(client);
@@ -83,7 +85,7 @@ public class ClientService {
     public void updateClient(ClientDTO clientDTO) {
 
         Optional<Client> clientData = getEntityById(clientDTO.getId());
-        Client client = clientData.get();
+        Client client = clientData.orElseThrow(ClientNotFoundException::new);
 
         Client newClient = MappingUtils.mapToClient(clientDTO);
         newClient.setPassword(client.getPassword());
@@ -100,7 +102,7 @@ public class ClientService {
      */
     public void deleteClient(long id) {
         Optional<Client> clientData = getEntityById(id);
-        Client client = clientData.get();
+        Client client = clientData.orElseThrow(ClientNotFoundException::new);
 
         client.setStatus("deleted");
 

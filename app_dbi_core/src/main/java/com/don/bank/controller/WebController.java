@@ -18,7 +18,9 @@ import java.util.Arrays;
 public class WebController {
 
     private static final Logger log = LoggerFactory.getLogger(WebController.class);
+
     private final AccountService accountService;
+
     private final WebService webService;
 
     public WebController(AccountService accountService, WebService webService){
