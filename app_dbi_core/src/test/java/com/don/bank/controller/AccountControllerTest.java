@@ -100,6 +100,7 @@ class AccountControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Updated Account"));
     }
+
     @Test
     void updateAccount_ShouldReturnNotFound_WhenAccountDoesNotExist() throws Exception {
 

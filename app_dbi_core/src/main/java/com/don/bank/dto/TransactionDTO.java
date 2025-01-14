@@ -16,7 +16,7 @@ public class TransactionDTO {
     private long id;
 
     @Schema(description = "Amount of the transaction", example = "100")
-    @NotNull(message = "Amount is required")
+    @NotNull(message = "message.validation.transaction.amount")
     private double amount;
 
     @Schema(description = "Transaction type of the transaction (DEPOSIT | WITHDRAW | TRANSFER)", example = "100")
@@ -26,7 +26,7 @@ public class TransactionDTO {
     private Timestamp createdAt;
 
     @Schema(description = "Account id of the transaction", example = "10000")
-    @NotNull(message = "Account id is required")
+    @NotNull(message = "message.validation.transaction.accountId")
     private long accountId;
 
     @Schema(description = "Account recipient id of the transaction", example = "10000")

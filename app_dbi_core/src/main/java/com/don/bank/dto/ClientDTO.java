@@ -18,18 +18,18 @@ public class ClientDTO {
     private long id;
 
     @Schema(description = "First name of the client", example = "Ivan")
-    @NotNull(message = "First name is required")
-    @Pattern(regexp = "^\\p{Lu}.*", message = "Client first name must start with an uppercase letter")
+    @NotNull(message = "message.validation.client.firstName")
+    @Pattern(regexp = "^\\p{Lu}.*", message = "message.validation.client.firstName.pattern")
     private String firstName;
 
     @Schema(description = "Last name of the client", example = "Ivanov")
-    @NotNull(message = "Last name is required")
-    @Pattern(regexp = "^\\p{Lu}.*", message = "Client last name must start with an uppercase letter")
+    @NotNull(message = "message.validation.client.lastName")
+    @Pattern(regexp = "^\\p{Lu}.*", message = "message.validation.client.lastName.pattern")
     private String lastName;
 
     @Schema(description = "Phone of the client", example = "79001001010")
-    @NotNull(message = "Phone is required")
-    @Pattern(regexp = "^7\\d{10}$", message = "Client number phone not valid")
+    @NotNull(message = "message.validation.client.phone")
+    @Pattern(regexp = "^7\\d{10}$", message = "message.validation.client.phone.pattern")
     private String phone;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)

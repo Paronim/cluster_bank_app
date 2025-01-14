@@ -107,6 +107,7 @@ public class SecurityConfig {
                         .failureHandler((request, response, exception) -> {
                             log.error("Error OAuth2: {}", exception.getMessage(), exception);
                             SecurityContextHolder.clearContext();
+                            JWTTokenCookie.removeToken(response);
                             response.sendRedirect("/login?error");
                         })
                         .userInfoEndpoint(userInfo -> userInfo
@@ -117,7 +118,7 @@ public class SecurityConfig {
 
                     log.info(request.getRequestURI());
                     log.error(authException.getMessage(), authException);
-
+                    JWTTokenCookie.removeToken(response);
                     SecurityContextHolder.clearContext();
 
                     response.sendRedirect("/login");
@@ -144,6 +145,7 @@ public class SecurityConfig {
         return userRequest -> {
             OAuth2User oauth2User = new DefaultOAuth2UserService().loadUser(userRequest);
 
+            @SuppressWarnings("unchecked")
             Map<String, Object> phoneData = (Map<String, Object>) oauth2User.getAttributes().get("default_phone");
             String firstName = (String) oauth2User.getAttributes().get("first_name");
             String lastName = (String) oauth2User.getAttributes().get("last_name");

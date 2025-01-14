@@ -2,6 +2,7 @@
 <%@ attribute name="page" required="false" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/UI" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <head>
     <title>DBI app</title>
@@ -30,17 +31,22 @@
 <header>
     <div class="header-wrapper">
         <p class="logo"><a href="/">${title}</a></p>
-        <c:choose>
-            <c:when test="${page == 'login'}">
-                <a href="/register" id="Register" class="control-link">Register</a>
-            </c:when>
-            <c:when test="${page == 'register'}">
-                <a href="/login" id="Sign up" class="control-link">Sign up</a>
-            </c:when>
-            <c:otherwise>
-                <a href="/auth/logout" id="Logout" class="control-link">Logout</a>
-            </c:otherwise>
-        </c:choose>
+        <div class="actions">
+            <div id="lang" data-lang="<spring:message code='message.lang' />">
+                <ui:select options="${['ru', 'en']}" name=""/>
+            </div>
+            <c:choose>
+                <c:when test="${page == 'login'}">
+                    <a href="/register" id="Register" class="control-link"><spring:message code="header.button.register" /></a>
+                </c:when>
+                <c:when test="${page == 'register'}">
+                    <a href="/login" id="Sign up" class="control-link"><spring:message code="header.button.login" /></a>
+                </c:when>
+                <c:otherwise>
+                    <a href="/auth/logout" id="Logout" class="control-link"><spring:message code="header.button.logout" /></a>
+                </c:otherwise>
+            </c:choose>
+        </div>
     </div>
     <div id="notification-container"></div>
 </header>

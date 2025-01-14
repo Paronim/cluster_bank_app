@@ -12,10 +12,10 @@ export function initAccount() {
     subscribe("deposit-account", callbackDeposit)
 }
 
-function callbackUpdate() {
+function callbackUpdate(message) {
     const button = document.querySelector(".update-account");
     updateInfo()
-    showNotification("update account successfully")
+    showNotification(message)
     button.click();
 }
 
@@ -23,27 +23,27 @@ function callbackDelete() {
     window.location.href = "/";
 }
 
-function callbackTransfer() {
+function callbackTransfer(message) {
     const button = document.querySelector(".transfer-account");
     updateInfo()
     infoAccount()
-    showNotification("Transfer successfully")
+    showNotification(message)
     button.click();
 }
 
-function callbackWithdraw() {
+function callbackWithdraw(message) {
     const button = document.querySelector(".withdraw-account");
     updateInfo()
     infoAccount()
-    showNotification("Withdraw successfully")
+    showNotification(message)
     button.click();
 }
 
-function callbackDeposit() {
+function callbackDeposit(message) {
     const button = document.querySelector(".deposit-account");
     updateInfo()
     infoAccount()
-    showNotification("Deposit successfully")
+    showNotification(message)
     button.click();
 }
 
@@ -62,11 +62,9 @@ function updateInfo() {
     getAccount(infoBlock.getAttribute("data-id"))
         .then(account => {
             if (infoBlock && account) {
-                infoBlock.innerHTML = `
-                            <p>Name: ${account.name}</p>
-                            <p>Type: ${account.type}</p>
-                            <p>Balance: ${account.balance} ${account.currency}</p>
-                    `;
+                infoBlock.querySelector(".name span").innerHTML = account.name;
+                infoBlock.querySelector(".type span").innerHTML = account.type;
+                infoBlock.querySelector(".balance span").innerHTML = account.balance;
             }
         })
         .catch(e => {

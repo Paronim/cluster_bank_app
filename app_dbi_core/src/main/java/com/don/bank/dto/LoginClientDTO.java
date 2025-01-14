@@ -11,11 +11,11 @@ import lombok.Data;
 public class LoginClientDTO {
 
     @Schema(description = "Phone of the client", example = "79001001010")
-    @NotNull(message = "Phone is required")
-    @Pattern(regexp = "^7\\d{10}$", message = "Client number phone not valid")
+    @NotNull(message = "message.validation.client.phone")
+    @Pattern(regexp = "^7\\d{10}$", message = "message.validation.client.phone.pattern")
     private String phone;
 
     @Schema(description = "Password of the client", example = "Password123!")
-    @NotNull(message = "Password is required")
+    @NotNull(message = "message.validation.login.password")
     private String password;
 }

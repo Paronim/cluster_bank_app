@@ -5,6 +5,11 @@ import {getClientId} from "./fetch/clients.js";
 initModules()
 
 async function initModules() {
+
+    import("./lang.js").then(module => {
+        module.initLang();
+    })
+
     if (page === "index") {
         await getId()
 

@@ -9,9 +9,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Locale;
 import java.util.Map;
 
 @RestController
@@ -22,8 +24,11 @@ public class TransactionController {
 
     private final TransactionService transactionService;
 
-    public TransactionController(TransactionService transactionService) {
+    private final MessageSource messageSource;
+
+    public TransactionController(TransactionService transactionService, MessageSource messageSource) {
         this.transactionService = transactionService;
+        this.messageSource = messageSource;
     }
 
     @Operation(
@@ -80,13 +85,13 @@ public class TransactionController {
     })
     @PostMapping("/transfer")
     public ResponseEntity transfer(
-            @Parameter(description = "Transaction details for the money transfer", required = true) @RequestBody TransactionDTO transactionDTO) {
+            @Parameter(description = "Transaction details for the money transfer", required = true) @RequestBody TransactionDTO transactionDTO, Locale locale) {
         try {
             transactionService.transferMoney(transactionDTO);
-            return ResponseEntity.ok(Map.of("message","Money transferred successfully"));
+            return ResponseEntity.ok(Map.of("message",messageSource.getMessage("message.transaction.transfer.ok", null, locale)));
         } catch (AccountNotFoundException e) {
             log.error(e.getMessage());
-            return ResponseEntity.badRequest().body(Map.of("message","Error transferring money: " + e.getMessage()));
+            return ResponseEntity.badRequest().body(Map.of("message",messageSource.getMessage("message.account.notFoundError", null, locale)));
         } catch (Exception e) {
             log.error(e.getMessage());
             return ResponseEntity.internalServerError().body(Map.of("message","Error transferring money: " + e.getMessage()));

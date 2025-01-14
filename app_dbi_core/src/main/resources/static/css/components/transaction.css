@@ -22,3 +22,12 @@
     border-bottom: 1px #021464 solid;
     border-radius: 10px;
 }
+
+#transaction-account-element {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    gap: 10px;
+    padding: 0;
+    border-right: none;
+}

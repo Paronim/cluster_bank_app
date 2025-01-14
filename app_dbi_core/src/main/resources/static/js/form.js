@@ -26,8 +26,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             fetchData(form.getAttribute("method"), form.getAttribute("action"), formData).then(
                 response => {
-
-                    observable.notify(form.getAttribute("id"))
+                    console.log(response.message);
+                    observable.notify(form.getAttribute("id"), response.message)
                     if (form.getAttribute("id") === "auth") {
                         saveInfo(response.id)
                     }

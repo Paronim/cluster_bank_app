@@ -47,7 +47,13 @@ function renderTransactions(account) {
 
             if (infoBlock) {
                 if(transactions.length > 0) {
-                    infoBlock.innerHTML = ''
+
+                    let element = infoBlock.querySelector(".ref div");
+                    let wrapper = infoBlock.querySelector(".info")
+
+                    wrapper.innerHTML = ''
+                    infoBlock.querySelector('.loader').classList.add('none')
+
                     transactions.forEach(async transaction => {
 
                         let dateObj = new Date(transaction.createdAt);
@@ -63,32 +69,32 @@ function renderTransactions(account) {
                             });
                         }
 
-                        infoBlock.innerHTML += `<div class="transaction-element">
+                        let cloneNode = element.cloneNode(true);
 
-                            <div>
-                                <p>${date}</p> 
-                                <p>${time}</p>
-                            </div>
-                            <div>
-                                <p>Type:</p> 
-                                <p>${transaction.transactionType}</p>
-                            </div>
-                            <div>
-                                <p>Amount:</p> 
-                                <p>${transaction.amount}</p>
-                            </div>
-                            <div class="transaction-account-wrapper">
-                                <p>Account:</p>
-                                <p>Name: ${account.name} Currency: ${account.currency}</p>
-                                ${recipient ? "<p>Name: " + recipient.name + " Currency: " + recipient.currency + "</p>" : ""}
-                            </div>
-                      </div>
-                    `;
+                        cloneNode.querySelector('#date').innerHTML = date
+                        cloneNode.querySelector('#time').innerHTML = time
+                        cloneNode.querySelector('#type').innerHTML = transaction.transactionType
+                        cloneNode.querySelector('#amount').innerHTML = transaction.amount
+
+                        let accountWrapper = cloneNode.querySelector('#transaction-account-element')
+                        accountWrapper.querySelector('#name span').innerHTML = account.name
+                        accountWrapper.querySelector('#currency span').innerHTML = account.currency
+
+                        if(recipient){
+                            let cloneAccountNode = accountWrapper.cloneNode(true);
+
+                            cloneAccountNode.querySelector('#name span').innerHTML = account.name
+                            cloneAccountNode.querySelector('#currency span').innerHTML = account.currency
+
+                            cloneNode.querySelector('.transaction-account-wrapper').appendChild(cloneAccountNode);
+                        }
+
+                        wrapper.appendChild(cloneNode);
                     })
 
                 } else {
-                    infoBlock.innerHTML = ''
-                    infoBlock.innerHTML += `<p>null transactions</p>`
+                    // infoBlock.innerHTML = ''
+                    // infoBlock.innerHTML += `<p>null transactions</p>`
                 }
 
             }

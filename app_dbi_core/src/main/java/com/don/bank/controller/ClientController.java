@@ -14,11 +14,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Locale;
 import java.util.Map;
 
 @RestController
@@ -31,10 +33,12 @@ public class ClientController {
 
     private JwtUtils jwtUtils;
 
-    public ClientController(ClientService clientService, JwtUtils jwtUtils) {
+    private final MessageSource messageSource;
+
+    public ClientController(ClientService clientService, JwtUtils jwtUtils, MessageSource messageSource) {
         this.clientService = clientService;
         this.jwtUtils = jwtUtils;
-
+        this.messageSource = messageSource;
     }
 
     @Operation(summary = "Retrieve a client by ID", description = "Fetches a client by their unique identifier.")
@@ -87,17 +91,17 @@ public class ClientController {
     })
     @PatchMapping
     public ResponseEntity updateClient(
-            @Parameter(description = "Updated client data", required = true) @RequestBody @Validated ClientDTO clientDTO) {
+            @Parameter(description = "Updated client data", required = true) @RequestBody @Validated ClientDTO clientDTO, Locale locale) {
         try {
             clientService.getById(clientDTO.getId());
             clientService.updateClient(clientDTO);
-            return ResponseEntity.ok(Map.of("massege", "Update client successfully"));
+            return ResponseEntity.ok(Map.of("message", messageSource.getMessage("message.client.update.ok", null, locale)));
         } catch (ClientNotFoundException e) {
             log.warn("Client not found: {}", clientDTO.getId());
             return new ResponseEntity<>(Map.of("message", e.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             log.error(e.getMessage());
-            return ResponseEntity.internalServerError().body(Map.of("message","Error while updating client"));
+            return ResponseEntity.internalServerError().body(Map.of("message",messageSource.getMessage("message.client.error.update", null, locale)));
         }
     }
 

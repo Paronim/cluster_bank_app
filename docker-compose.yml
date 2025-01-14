@@ -45,7 +45,7 @@ services:
     networks:
       - app_dbi
     volumes:
-      - ./es_data:/usr/share/elasticsearch/data
+      - ./es_data/data:/usr/share/elasticsearch/data
 
   app-dbi-core:
     build:

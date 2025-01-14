@@ -11,26 +11,26 @@ import lombok.Data;
 public class RegisterClientDTO {
 
     @Schema(description = "First name of the client", example = "Ivan")
-    @NotNull(message = "First name is required")
-    @Pattern(regexp = "^[A-Z].*", message = "Client first name must start with an uppercase letter")
+    @NotNull(message = "message.validation.client.firstName")
+    @Pattern(regexp = "^[A-Z].*", message = "message.validation.client.firstName.pattern")
     private String firstName;
 
     @Schema(description = "Last name of the client", example = "Ivanov")
-    @NotNull(message = "Last name is required")
-    @Pattern(regexp = "^[A-Z].*", message = "Client first name must start with an uppercase letter")
+    @NotNull(message = "message.validation.client.lastName")
+    @Pattern(regexp = "^[A-Z].*", message = "message.validation.client.lastName.pattern")
     private String lastName;
 
     @Schema(description = "Phone of the client", example = "79001001010")
-    @NotNull(message = "Phone is required")
-    @Pattern(regexp = "^7\\d{10}$", message = "Client number phone not valid")
+    @NotNull(message = "message.validation.client.phone")
+    @Pattern(regexp = "^7\\d{10}$", message = "message.validation.client.phone.pattern")
     private String phone;
 
     @Schema(description = "Password of the client", example = "Password123!")
-    @NotNull(message = "Password is required")
-    @Pattern(regexp = "^.{8,}$", message = "The password must be at least 8 characters")
-    @Pattern(regexp = "^(?=.*[A-Z]).*$", message = "The password must have at least one uppercase letter")
-    @Pattern(regexp = "^(?=.*[0-9]).*$", message = "The password must have at least one number")
-    @Pattern(regexp = "^(?=.*[@$!%*?&.\\-_]).*$", message = "The password must have at least one special character (@$!%*?&.-_)")
-    @Pattern(regexp = "^[A-Za-z\\d@$!%*?&.\\-_]+$", message = "The password contains invalid characters")
+    @NotNull(message = "message.validation.login.password")
+    @Pattern(regexp = "^.{8,}$", message = "message.validation.register.password.pattern_1")
+    @Pattern(regexp = "^(?=.*[A-Z]).*$", message = "message.validation.register.password.pattern_2")
+    @Pattern(regexp = "^(?=.*[0-9]).*$", message = "message.validation.register.password.pattern_3")
+    @Pattern(regexp = "^(?=.*[@$!%*?&.\\-_]).*$", message = "message.validation.register.password.pattern_4")
+    @Pattern(regexp = "^[A-Za-z\\d@$!%*?&.\\-_]+$", message = "message.validation.register.password.pattern_5")
     private String password;
 }

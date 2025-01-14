@@ -9,11 +9,11 @@ export default class Observable {
         }
     }
 
-    notify(key) {
+    notify(key, message) {
         const callback = this.subscriptions.get(key)
 
         if (typeof callback === 'function') {
-            callback()
+            callback(message)
         }
     }
 }

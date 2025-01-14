@@ -1,8 +1,11 @@
 package com.don.bank.controller;
 
+import com.don.bank.dto.AccountDTO;
 import com.don.bank.entity.Account;
 import com.don.bank.service.AccountService;
 import com.don.bank.service.WebService;
+import com.don.bank.util.JWT.JwtUtils;
+import com.don.bank.util.languageUtils.LanguageUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,9 +13,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 @Controller
 public class WebController {
@@ -23,9 +29,12 @@ public class WebController {
 
     private final WebService webService;
 
-    public WebController(AccountService accountService, WebService webService){
+    private final JwtUtils jwtUtils;
+
+    public WebController(AccountService accountService, WebService webService, JwtUtils jwtUtils){
         this.webService = webService;
         this.accountService = accountService;
+        this.jwtUtils = jwtUtils;
     }
 
     @GetMapping("/")
@@ -74,22 +83,34 @@ public class WebController {
     }
 
     @GetMapping("/account/{id}")
-    public String account(@PathVariable Long id, Model model) {
+    public String account(@PathVariable Long id, Model model, HttpServletRequest request) {
 
         try{
-            Account account = accountService.getAccountById(id);
 
-            if (account == null) {
-                model.addAttribute("error", "Account whith ID " + id + " not found");
-                model.addAttribute("page", "error");
-                return "error";
+            String token = webService.getToken(request);
+            long clientId = Long.parseLong(jwtUtils.extractUsername(token));
+
+            List<AccountDTO> accounts = accountService.getAccountsByClientId(clientId);
+
+            boolean exists = accounts.stream().anyMatch(a -> id == a.getId());
+
+            if(exists){
+                Account account = accountService.getAccountById(id);
+
+                if (account == null) {
+                    model.addAttribute("error", "Account whith ID " + id + " not found");
+                    model.addAttribute("page", "error");
+                    return "error";
+                }
+
+                model.addAttribute("currencies", Arrays.asList(Account.Currency.values()));
+                model.addAttribute("types", Arrays.asList(Account.Type.values()));
+                model.addAttribute("account", account);
+                model.addAttribute("page", "account");
+                return "account";
             }
 
-            model.addAttribute("currencies", Arrays.asList(Account.Currency.values()));
-            model.addAttribute("types", Arrays.asList(Account.Type.values()));
-            model.addAttribute("account", account);
-            model.addAttribute("page", "account");
-            return "account";
+            return "redirect:/";
         } catch (Exception e){
             log.error(e.getMessage());
             model.addAttribute("error", e.getMessage());

@@ -13,10 +13,10 @@ export function initAccounts() {
 }
 
 
-function callbackCreate(){
+function callbackCreate(message){
     const button =  document.querySelector(".create-account");
     info()
-    showNotification("Create account successfully")
+    showNotification(message)
     button.click();
 }
 
@@ -26,17 +26,22 @@ function info() {
     getAccounts(clientId)
         .then(accounts => {
             if (infoBlock && accounts) {
-                infoBlock.innerHTML = ''
+
+                let element = infoBlock.querySelector(".ref a");
+                let wrapper = infoBlock.querySelector(".info")
+
+                wrapper.innerHTML = ''
+                infoBlock.querySelector('.loader').classList.add('none')
+
                 accounts.forEach(account => {
-                    infoBlock.innerHTML += `<a href="/account/${account.id}" class="accounts-element">
-                        <div>
-                            <p>Name: ${account.name}</p>
-                            <p>Type: ${account.type}</p>
-                            <p>Balance: ${account.balance} ${account.currency}</p>
-                        </div>
-                        
-                      </a>
-                    `;
+                    let cloneNode = element.cloneNode(true);
+
+                    cloneNode.setAttribute("href", `/account/${account.id}`);
+                    cloneNode.querySelector("#name span").innerHTML = account.name;
+                    cloneNode.querySelector("#type span").innerHTML = account.type;
+                    cloneNode.querySelector("#balance span").innerHTML = `${account.balance} ${account.currency}`
+
+                    wrapper.appendChild(cloneNode);
                 })
 
             }

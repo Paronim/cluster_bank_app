@@ -12,10 +12,10 @@ export function initClient() {
     subscribe("delete-client", callbackDelete)
 }
 
-function callbackUpdate(){
+function callbackUpdate(message){
     const button =  document.querySelector(".update-client");
     info()
-    showNotification("Update client successfully")
+    showNotification(message)
     button.click();
 }
 
@@ -34,11 +34,13 @@ function info(){
                 infoBlock.setAttribute("data-firstName", client.firstName)
                 infoBlock.setAttribute("data-lastName", client.lastName)
                 infoBlock.setAttribute("data-phone", client.phone)
-                infoBlock.innerHTML = `
-                    <p>Phone: ${formatPhoneNumber(String(client.phone))}</p>
-                    <p>First Name: ${client.firstName}</p>
-                    <p>Last Name: ${client.lastName}</p>
-                `;
+
+                infoBlock.querySelector(".loader").classList.add("none")
+
+                infoBlock.querySelector(".info").classList.remove("none");
+                infoBlock.querySelector("#phone span").innerHTML = formatPhoneNumber(String(client.phone))
+                infoBlock.querySelector("#first-name span").innerHTML = client.firstName
+                infoBlock.querySelector("#last-name span").innerHTML = client.lastName
             }
         })
         .catch(e => {

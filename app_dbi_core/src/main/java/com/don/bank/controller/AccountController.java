@@ -14,11 +14,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Locale;
 import java.util.Map;
 
 @Controller
@@ -31,9 +33,12 @@ public class AccountController {
 
     private ClientService clientService;
 
-    public AccountController(AccountService accountService, ClientService clientService) {
+    private final MessageSource messageSource;
+
+    public AccountController(AccountService accountService, ClientService clientService, MessageSource messageSource) {
         this.accountService = accountService;
         this.clientService = clientService;
+        this.messageSource = messageSource;
     }
 
     @Operation(summary = "Retrieve account list", description = "Returns all accounts or accounts of a specific client by clientId.")
@@ -87,19 +92,22 @@ public class AccountController {
     @PostMapping
     public ResponseEntity createAccount(
             @Parameter(description = "Account data to create", required = true)
-            @RequestBody AccountDTO accountDTO) {
+            @RequestBody AccountDTO accountDTO,
+            Locale locale) {
         if (accountDTO.getClientId() == 0) {
             log.warn("Client id is required");
             return ResponseEntity.badRequest().body(Map.of(
-                    "message","Client id is required"));
+                    "message", "Client id is required"));
         }
 
         try {
             clientService.getById(accountDTO.getClientId());
-            return ResponseEntity.ok(accountService.createAccount(accountDTO));
+            accountService.createAccount(accountDTO);
+            return ResponseEntity.ok(Map.of(
+                    "message", messageSource.getMessage("message.account.create.ok", null, locale)));
         } catch (ClientNotFoundException e) {
             log.warn("Client not found: {}", accountDTO.getClientId());
-            return new ResponseEntity<>(Map.of("message", e.getMessage()), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(Map.of("message", messageSource.getMessage("message.client.notFoundError", null, locale)), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             log.error("Error creating account", e);
             return ResponseEntity.internalServerError().body(Map.of(
@@ -116,20 +124,23 @@ public class AccountController {
     @PutMapping
     public ResponseEntity updateAccount(
             @Parameter(description = "Updated account data", required = true)
-            @RequestBody AccountDTO accountDTO) {
+            @RequestBody AccountDTO accountDTO,
+            Locale locale) {
         try {
             if (accountService.getAccountById(accountDTO.getId()) == null) {
                 throw new AccountNotFoundException();
             }
 
-            return ResponseEntity.ok(accountService.updateAccount(accountDTO));
+            accountService.updateAccount(accountDTO);
+
+            return ResponseEntity.ok(Map.of("message", messageSource.getMessage("message.account.update.ok", null, locale)));
         } catch (AccountNotFoundException e) {
             log.error("Error updating account: ", e);
-            return new ResponseEntity<>(Map.of("message","Error updating account: " + e.getMessage()), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(Map.of("message", messageSource.getMessage("message.account.notFoundError", null, locale)), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             log.error("Error updating account", e);
             return ResponseEntity.internalServerError().body(Map.of(
-                    "message", "Error updating account"));
+                    "message", messageSource.getMessage("message.account.error.update", null, locale)));
         }
     }
 
@@ -142,13 +153,14 @@ public class AccountController {
     @DeleteMapping("/{id}")
     public ResponseEntity deleteAccount(
             @Parameter(description = "ID of the account to delete", required = true)
-            @PathVariable Long id) {
+            @PathVariable Long id,
+            Locale locale) {
         try {
             accountService.deleteAccount(id);
-            return ResponseEntity.ok(Map.of("message", "Account deleted " + id));
+            return ResponseEntity.ok(Map.of("message", messageSource.getMessage("message.account.delete.ok", null, locale)));
         } catch (AccountNotFoundException e) {
             log.error("Account not found: ", e);
-            return new ResponseEntity<>(Map.of("message", e.getMessage()), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(Map.of("message", messageSource.getMessage("message.account.notFoundError", null, locale)), HttpStatus.NOT_FOUND);
         } catch (ErrorDeleteAccountException e) {
             log.error("Error deleting account: ", e);
             return ResponseEntity.badRequest().body(Map.of("message", "Error deleting account: " + e.getMessage()));
@@ -165,15 +177,17 @@ public class AccountController {
             @Parameter(description = "ID of the account", required = true)
             @PathVariable Long id,
             @Parameter(description = "Amount to withdraw", required = true)
-            @RequestBody Map<String, Double> withdraw) {
+            @RequestBody Map<String, Double> withdraw,
+            Locale locale) {
         try {
-            return ResponseEntity.ok(accountService.withdrawBalance(id, withdraw.get("amount"), "transaction"));
+            accountService.withdrawBalance(id, withdraw.get("amount"), "transaction");
+            return ResponseEntity.ok(Map.of("message", messageSource.getMessage("message.account.withdraw.ok", null, locale)));
         } catch (AccountNotFoundException e) {
             log.error("Account not found: ", e);
-            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+            return new ResponseEntity<>(Map.of("message", messageSource.getMessage("message.account.notFoundError", null, locale)), HttpStatus.NOT_FOUND);
         } catch (MoneyTransactionException e) {
             log.error("Error money transaction: ", e);
-            return ResponseEntity.badRequest().body(Map.of("message", "Error money transaction: " + e.getMessage()));
+            return ResponseEntity.badRequest().body(Map.of("message", messageSource.getMessage("message.account.error.withdraw", null, locale)));
         } catch (Exception e) {
             log.error("Error withdrawing balance: ", e);
             return ResponseEntity.internalServerError().body(Map.of(
@@ -187,9 +201,11 @@ public class AccountController {
             @Parameter(description = "ID of the account", required = true)
             @PathVariable Long id,
             @Parameter(description = "Amount to deposit", required = true)
-            @RequestBody Map<String, Double> deposit) {
+            @RequestBody Map<String, Double> deposit,
+            Locale locale) {
         try {
-            return ResponseEntity.ok(accountService.depositBalance(id, deposit.get("amount"), "transaction"));
+            accountService.depositBalance(id, deposit.get("amount"), "transaction");
+            return ResponseEntity.ok(Map.of("message", messageSource.getMessage("message.account.deposit.ok", null, locale)));
         } catch (AccountNotFoundException e) {
             log.error("Account not found: ", e);
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
