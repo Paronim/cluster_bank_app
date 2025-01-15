@@ -72,6 +72,9 @@ services:
       context: app_dbi_transactions
       dockerfile: Dockerfile
     environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db/app_dbi
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 1356
       SPRING_RABBITMQ_HOST: rabbitmq
       SPRING_RABBITMQ_USERNAME: root
       SPRING_RABBITMQ_PASSWORD: root

@@ -25,18 +25,8 @@ public class ReceiptService {
      *
      * @param receiptRepository the repository responsible for managing receipt data
      */
-    private ReceiptService(ReceiptRepository receiptRepository) {
+    public ReceiptService(ReceiptRepository receiptRepository) {
         this.receiptRepository = receiptRepository;
-    }
-
-    /**
-     * Saves a single receipt to the database.
-     * The receipt is mapped from the provided {@link ReceiptDTO} object before saving.
-     *
-     * @param receiptDTO the receipt data transfer object to be saved
-     */
-    public void save(ReceiptDTO receiptDTO) {
-        receiptRepository.save(MappingUtils.mapToReceipt(receiptDTO));
     }
 
     /**

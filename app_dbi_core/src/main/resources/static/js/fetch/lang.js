@@ -1,4 +1,4 @@
-let url = "http://" + window.location.host + "/change/lang/";
+let url = "http://" + window.location.host + "/lang/change";
 
 export async function changeLang(lang) {
 

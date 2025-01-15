@@ -89,6 +89,7 @@ public class SecurityConfig {
                                 "/login",
                                 "/register",
                                 "/error",
+                                "/lang/change",
                                 "/login/oauth2/code/yandex",
                                 "/WEB-INF/views/login.jsp",
                                 "/WEB-INF/views/error.jsp",

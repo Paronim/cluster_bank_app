@@ -1,7 +1,7 @@
 package com.don.bank.transactions.controller;
 
 import com.don.bank.transactions.dto.ReceiptDTO;
-import com.don.bank.transactions.service.ReceiptService;
+import com.don.bank.transactions.service.TransactionService;
 import com.rabbitmq.client.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,17 +16,17 @@ import java.io.IOException;
 @RestController
 public class ConsumerController {
 
+    private final TransactionService transactionService;
     Logger logger = LoggerFactory.getLogger(ConsumerController.class);
-    private final ReceiptService receiptService;
 
-    public ConsumerController(ReceiptService receiptService) {
-        this.receiptService = receiptService;
+    public ConsumerController(TransactionService transactionService) {
+        this.transactionService = transactionService;
     }
 
     @RabbitListener(queues = "transactionQueue")
     public void receiveMessage(@Payload ReceiptDTO receiptDTO, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
         try {
-            receiptService.save(receiptDTO);
+            transactionService.save(receiptDTO);
             channel.basicAck(tag, false);
         } catch (Exception e) {
             logger.error(e.getMessage());

@@ -117,9 +117,7 @@ public class TransactionService {
      */
     @Transactional
     public void createTransaction(Transaction transaction) {
-        Transaction savedTransaction = transactionRepository.save(transaction);
-
-        producerService.send(MappingUtils.mapToTransactionDto(savedTransaction));
+        producerService.send(MappingUtils.mapToTransactionDto(transaction));
     }
 
     /**
@@ -192,11 +190,11 @@ public class TransactionService {
 
     public double convertMoney(Transaction transaction, double amount, String senderCurrency, String recipientCurrency) {
 
-        transactionRepository.save(Transaction.builder()
+        producerService.send(TransactionDTO.builder()
                 .amount(amount)
-                .transactionType(Transaction.TransactionType.CONVERT)
-                .recipient(transaction.getRecipient())
-                .account(transaction.getAccount())
+                .transactionType(String.valueOf(Transaction.TransactionType.CONVERT))
+                .recipientId(transaction.getRecipient().getId())
+                .accountId(transaction.getAccount().getId())
                 .build());
 
         return convertorCurrencyService.convert(
