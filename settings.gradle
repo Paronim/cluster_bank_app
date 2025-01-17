@@ -1,0 +1,5 @@
+rootProject.name = 'bank'
+
+include 'common'
+include 'dbi_transaction'
+include 'dbi_core'

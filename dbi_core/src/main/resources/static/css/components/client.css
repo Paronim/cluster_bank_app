@@ -1,0 +1,10 @@
+.client-wrapper .client-control {
+    display: flex;
+    gap: 10px;
+    align-items: end;
+}
+
+.client-wrapper {
+    display: flex;
+    justify-content: space-between;
+}

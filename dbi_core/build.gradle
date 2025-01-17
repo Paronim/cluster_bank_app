@@ -1,0 +1,73 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.3.5'
+	id 'io.spring.dependency-management' version '1.1.6'
+	id 'checkstyle'
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(23)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+springBoot {
+	mainClass = 'com.don.bank.BankApplication.java'
+}
+
+repositories {
+	mavenCentral()
+}
+
+checkstyle {
+	toolVersion = '10.12.2'
+	configFile = file('src/main/resources/checkstyle.xml')
+}
+
+dependencies {
+	implementation project(path: ':common')
+
+	implementation "org.springframework.boot:spring-boot-starter-security"
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	implementation 'org.springframework.security:spring-security-crypto'
+	implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
+
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+	compileOnly 'jakarta.servlet:jakarta.servlet-api:6.0.0'
+
+	implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:3.0.2'
+	implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl:3.0.1'
+
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
+	implementation 'org.flywaydb:flyway-core'
+	implementation 'org.flywaydb:flyway-database-postgresql'
+
+	implementation 'javax.cache:cache-api'
+	implementation 'org.ehcache:ehcache'
+
+	implementation 'com.puppycrawl.tools:checkstyle:10.21.0'
+
+	testImplementation 'io.zonky.test:embedded-database-spring-test:2.5.1'
+}
+
+tasks.withType(Checkstyle).configureEach {
+	reports {
+		xml.required.set(true)
+		html.required.set(true)
+	}
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+	dependsOn compileJava
+}
+

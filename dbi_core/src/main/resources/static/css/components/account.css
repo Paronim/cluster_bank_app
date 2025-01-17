@@ -1,0 +1,14 @@
+.account-control {
+    display: flex;
+    align-items: start;
+    gap: 10px;
+}
+
+.account-content{
+    display: flex;
+    justify-content: space-between;
+}
+
+.transfer-control{
+    margin-top: 10px;
+}

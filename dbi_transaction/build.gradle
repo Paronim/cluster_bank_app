@@ -1,0 +1,43 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.3.5'
+	id 'io.spring.dependency-management' version '1.1.6'
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(23)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+springBoot {
+	mainClass = 'com.don.bank.transactions.TransactionsApplication.java'
+}
+
+//sourceSets {
+//	main {
+//		java {
+//			srcDirs += project(':common').projectDir.toPath().resolve('src/main/java').toString()
+//		}
+//	}
+//}
+
+dependencies {
+	implementation project(path: ':common')
+
+	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

@@ -1,0 +1,22 @@
+input {
+    width: 100%;
+    padding: 5px 10px;
+    border: 2px solid #021464;
+    border-radius: 10px;
+
+    color: #021464;
+}
+
+.input-wrapper {
+    width: 90%;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}

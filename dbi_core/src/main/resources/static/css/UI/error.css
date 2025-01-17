@@ -1,0 +1,17 @@
+.error-wrapper {
+    width: 90%;
+    background-color: brown;
+    padding: 5px 10px;
+    margin-bottom: 10px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 10px;
+}
+
+.error {
+    color: white;
+}
