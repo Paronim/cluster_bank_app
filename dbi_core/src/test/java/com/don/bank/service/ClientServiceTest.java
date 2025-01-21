@@ -1,6 +1,6 @@
 package com.don.bank.service;
 
-import com.don.bank.dto.ClientDTO;
+import com.don.common.models.ClientDTO;
 import com.don.bank.entity.Client;
 import com.don.bank.repository.ClientRepository;
 import com.don.bank.util.mappingUtils.MappingUtils;

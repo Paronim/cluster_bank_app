@@ -1,6 +1,6 @@
 package com.don.bank.transactions.utils.mappingUtils;
 
-import com.don.bank.transactions.dto.ReceiptDTO;
+import com.don.common.models.ReceiptDTO;
 import com.don.bank.transactions.entity.Receipt;
 import com.don.bank.transactions.entity.Transaction;
 

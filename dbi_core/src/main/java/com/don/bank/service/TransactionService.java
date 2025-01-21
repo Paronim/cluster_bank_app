@@ -1,6 +1,6 @@
 package com.don.bank.service;
 
-import com.don.bank.dto.TransactionDTO;
+import com.don.common.models.TransactionDTO;
 import com.don.bank.entity.Account;
 import com.don.bank.entity.Transaction;
 import com.don.bank.exception.account.AccountNotFoundException;

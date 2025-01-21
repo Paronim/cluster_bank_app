@@ -1,7 +1,7 @@
 package com.don.bank.transactions.controller;
 
-import com.don.bank.
 import com.don.bank.transactions.service.TransactionService;
+import com.don.common.models.ReceiptDTO;
 import com.rabbitmq.client.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

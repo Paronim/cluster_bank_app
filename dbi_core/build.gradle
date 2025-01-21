@@ -5,24 +5,8 @@ plugins {
 	id 'checkstyle'
 }
 
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(23)
-	}
-}
-
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
-}
-
 springBoot {
-	mainClass = 'com.don.bank.BankApplication.java'
-}
-
-repositories {
-	mavenCentral()
+	mainClass = 'com.don.bank.BankApplication'
 }
 
 checkstyle {
@@ -31,7 +15,7 @@ checkstyle {
 }
 
 dependencies {
-	implementation project(path: ':common')
+	implementation project(':common')
 
 	implementation "org.springframework.boot:spring-boot-starter-security"
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'

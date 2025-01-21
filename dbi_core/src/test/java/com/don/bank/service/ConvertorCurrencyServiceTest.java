@@ -1,6 +1,6 @@
 package com.don.bank.service;
 
-import com.don.bank.dto.ConvertDTO;
+import com.don.common.models.ConvertDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

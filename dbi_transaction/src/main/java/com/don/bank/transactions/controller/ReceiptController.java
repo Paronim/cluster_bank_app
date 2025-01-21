@@ -1,6 +1,6 @@
 package com.don.bank.transactions.controller;
 
-import com.don.bank.transactions.dto.ReceiptDTO;
+import com.don.common.models.ReceiptDTO;
 import com.don.bank.transactions.service.ReceiptService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

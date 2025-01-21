@@ -1,6 +1,6 @@
 package com.don.bank.controller;
 
-import com.don.bank.dto.AccountDTO;
+import com.don.common.models.AccountDTO;
 import com.don.bank.entity.Account;
 import com.don.bank.service.AccountService;
 import com.don.bank.service.WebService;

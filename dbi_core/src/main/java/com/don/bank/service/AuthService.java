@@ -1,8 +1,8 @@
 package com.don.bank.service;
 
 import com.don.bank.config.security.CustomUserDetails;
-import com.don.bank.dto.LoginClientDTO;
-import com.don.bank.dto.RegisterClientDTO;
+import com.don.common.models.LoginClientDTO;
+import com.don.common.models.RegisterClientDTO;
 import com.don.bank.entity.Client;
 import com.don.bank.util.JWT.JwtUtils;
 import org.springframework.context.annotation.Lazy;

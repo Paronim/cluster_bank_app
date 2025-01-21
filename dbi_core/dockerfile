@@ -5,19 +5,22 @@ WORKDIR /app
 COPY gradle /app/gradle
 COPY gradlew /app
 COPY build.gradle /app
-COPY settings.gradle /app
-COPY src /app/src
+COPY dbi_core/settings-docker.gradle /app
+COPY dbi_core/build.gradle /app/dbi_core/
+COPY dbi_core/src /app/dbi_core/src
+COPY common/build.gradle /app/common/
+COPY common/src /app/common/src
 
 RUN chmod +x gradlew
 
-RUN ./gradlew build -x test --no-daemon
+RUN ./gradlew -settings-file settings-docker.gradle build -x test --no-daemon
 
 FROM openjdk:23-jdk-slim
 
 WORKDIR /app
 
-COPY --from=build /app/build/libs/*.jar /app/app.jar
-COPY --from=build /app/src/main/webapp /app/src/main/webapp
+COPY --from=build /app/dbi_core/build/libs/*.jar /app/app.jar
+COPY --from=build /app/dbi_core/src/main/webapp /app/src/main/webapp
 
 EXPOSE 8080
 

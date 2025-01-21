@@ -1,4 +1,4 @@
-package com.common.models;
+package com.don.common.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;

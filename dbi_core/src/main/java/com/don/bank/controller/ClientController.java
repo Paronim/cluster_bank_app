@@ -1,6 +1,6 @@
 package com.don.bank.controller;
 
-import com.don.bank.dto.ClientDTO;
+import com.don.common.models.ClientDTO;
 import com.don.bank.exception.client.ClientNotFoundException;
 import com.don.bank.service.ClientService;
 import com.don.bank.util.JWT.JWTTokenCookie;

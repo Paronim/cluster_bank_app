@@ -5,23 +5,26 @@ WORKDIR /app
 COPY gradle /app/gradle
 COPY gradlew /app
 COPY build.gradle /app
-COPY settings.gradle /app
-COPY src /app/src
+COPY dbi_transaction/settings-docker.gradle /app
+COPY dbi_transaction/build.gradle /app/dbi_transaction/
+COPY dbi_transaction/src /app/dbi_transaction/src
+COPY common/build.gradle /app/common/
+COPY common/src /app/common/src
 
 RUN chmod +x gradlew
 
-RUN ./gradlew build -x test --no-daemon
+RUN ./gradlew -settings-file settings-docker.gradle build -x test --no-daemon
 
 FROM openjdk:23-jdk-slim
 
 RUN apt-get update && apt-get install -y curl && apt-get clean
 
-COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
+COPY dbi_transaction/wait-for-it.sh /usr/local/bin/wait-for-it.sh
 RUN chmod +x /usr/local/bin/wait-for-it.sh
 
 WORKDIR /app
 
-COPY --from=build /app/build/libs/*.jar /app/app.jar
+COPY --from=build /app/dbi_transaction/build/libs/*.jar /app/app.jar
 
 EXPOSE 8081
 

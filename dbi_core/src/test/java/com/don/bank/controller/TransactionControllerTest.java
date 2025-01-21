@@ -1,6 +1,6 @@
 package com.don.bank.controller;
 
-import com.don.bank.dto.TransactionDTO;
+import com.don.common.models.TransactionDTO;
 import com.don.bank.service.TransactionService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

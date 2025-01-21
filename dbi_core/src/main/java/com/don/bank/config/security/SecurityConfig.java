@@ -1,6 +1,6 @@
 package com.don.bank.config.security;
 
-import com.don.bank.dto.RegisterClientDTO;
+import com.don.common.models.RegisterClientDTO;
 import com.don.bank.entity.Client;
 import com.don.bank.service.AuthService;
 import com.don.bank.service.ClientService;

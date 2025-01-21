@@ -1,11 +1,12 @@
 package com.don.bank.service;
 
-import com.don.bank.common.models.RegisterClientDTO;
+import com.don.common.models.ClientDTO;
 import com.don.bank.entity.Account;
 import com.don.bank.entity.Client;
 import com.don.bank.exception.client.ClientNotFoundException;
 import com.don.bank.repository.ClientRepository;
 import com.don.bank.util.mappingUtils.MappingUtils;
+import com.don.common.models.RegisterClientDTO;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

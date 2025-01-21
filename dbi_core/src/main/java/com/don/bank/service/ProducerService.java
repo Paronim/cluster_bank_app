@@ -1,6 +1,6 @@
 package com.don.bank.service;
 
-import com.don.bank.dto.TransactionDTO;
+import com.don.common.models.TransactionDTO;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 

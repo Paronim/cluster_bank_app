@@ -1,6 +1,7 @@
 package com.don.bank.service;
 
-import com.don.bank.dto.ConvertDTO;
+
+import com.don.common.models.ConvertDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

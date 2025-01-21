@@ -1,6 +1,6 @@
 package com.don.bank.controller;
 
-import com.don.bank.dto.TransactionDTO;
+import com.don.common.models.TransactionDTO;
 import com.don.bank.exception.account.AccountNotFoundException;
 import com.don.bank.service.TransactionService;
 import io.swagger.v3.oas.annotations.Operation;

@@ -1,7 +1,7 @@
 package com.don.bank.controller;
 
-import com.don.bank.dto.LoginClientDTO;
-import com.don.bank.dto.RegisterClientDTO;
+import com.don.common.models.LoginClientDTO;
+import com.don.common.models.RegisterClientDTO;
 import com.don.bank.service.AuthService;
 import com.don.bank.util.JWT.JWTTokenCookie;
 import io.swagger.v3.oas.annotations.Operation;

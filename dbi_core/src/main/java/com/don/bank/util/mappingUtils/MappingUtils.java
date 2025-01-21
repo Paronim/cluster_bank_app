@@ -1,9 +1,9 @@
 package com.don.bank.util.mappingUtils;
 
-import com.don.bank.dto.AccountDTO;
-import com.don.bank.dto.ClientDTO;
-import com.don.bank.dto.RegisterClientDTO;
-import com.don.bank.dto.TransactionDTO;
+import com.don.common.models.AccountDTO;
+import com.don.common.models.ClientDTO;
+import com.don.common.models.RegisterClientDTO;
+import com.don.common.models.TransactionDTO;
 import com.don.bank.entity.Account;
 import com.don.bank.entity.Client;
 import com.don.bank.entity.Transaction;
