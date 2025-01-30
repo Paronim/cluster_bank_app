@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Locale;
 import java.util.Map;
 
-@Controller
+@RestController
 @RequestMapping("/accounts")
 public class AccountController {
 

@@ -3,4 +3,5 @@ rootProject.name = 'bank'
 include 'dbi_transaction'
 include 'dbi_core'
 include 'common'
+include 'flink_job'
 

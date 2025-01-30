@@ -40,19 +40,21 @@ subprojects {
 		}
 	}
 
-	dependencies {
-		implementation 'io.swagger:swagger-annotations:2.0.0-rc2'
+	if (name != "flink_job") {
+		dependencies {
+			implementation 'io.swagger:swagger-annotations:2.0.0-rc2'
 
-		implementation 'org.springframework.boot:spring-boot-starter-web'
-		implementation 'org.springframework.boot:spring-boot-starter-amqp'
-		implementation 'org.springframework.boot:spring-boot-starter-validation'
-		implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-		implementation 'org.postgresql:postgresql'
+			implementation 'org.springframework.boot:spring-boot-starter-web'
+			implementation 'org.springframework.boot:spring-boot-starter-amqp'
+			implementation 'org.springframework.boot:spring-boot-starter-validation'
+			implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+			implementation 'org.postgresql:postgresql'
 
-		compileOnly 'org.projectlombok:lombok'
-		annotationProcessor 'org.projectlombok:lombok'
-		testImplementation 'org.springframework.boot:spring-boot-starter-test'
-		testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+			compileOnly 'org.projectlombok:lombok'
+			annotationProcessor 'org.projectlombok:lombok'
+			testImplementation 'org.springframework.boot:spring-boot-starter-test'
+			testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+		}
 	}
 }
 
